@@ -58,11 +58,17 @@ export const apiClient = {
   async getPools(): Promise<Pool[]> {
     const response = await api.get<{known_pools: Record<string, any>}>('/pools');
     // Convert the known_pools object to an array for the frontend
-    const pools = Object.entries(response.data.known_pools).map(([name, pool]: [string, any]) => ({
-      id: pool.pool_id || '',
-      name: name,
-      ...pool
-    }));
+    // Filter out pools without valid pool_id
+    const pools = Object.entries(response.data.known_pools)
+      .filter(([, pool]: [string, any]) => pool.pool_id) // Only include pools with a pool_id
+      .map(([name, pool]: [string, any]) => ({
+        id: pool.pool_id,
+        name: name,
+        token0_symbol: pool.token0_symbol,
+        token1_symbol: pool.token1_symbol,
+        fee_tier: pool.fee_tier,
+        ...pool
+      }));
     return pools as Pool[];
   },
 

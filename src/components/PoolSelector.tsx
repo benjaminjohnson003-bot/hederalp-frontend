@@ -8,6 +8,7 @@ import { Pool, PoolValidation } from '../types';
 const PoolSelector: React.FC = () => {
   const { form, setForm, selectedPool, setSelectedPool, availablePools, setAvailablePools } = useLPStrategyStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<PoolValidation | null>(null);
 
@@ -103,11 +104,14 @@ const PoolSelector: React.FC = () => {
             onChange={(e) => {
               const value = e.target.value;
               setSearchQuery(value);
+              setShowDropdown(true);
               if (!value.includes('/')) {
                 // If not searching by symbol, update form directly
                 handleManualInput(value);
               }
             }}
+            onFocus={() => setShowDropdown(true)}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
             placeholder="Enter pool ID (e.g., 0.0.3964804) or search USDC/HBAR"
             className={`input w-full pl-10 pr-10 ${
               validationResult?.valid 
@@ -160,7 +164,7 @@ const PoolSelector: React.FC = () => {
       </div>
 
       {/* Pool Suggestions Dropdown */}
-      {searchQuery && filteredPools.length > 0 && (
+      {showDropdown && filteredPools.length > 0 && (
         <div className="relative">
           <div className="absolute top-0 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
             <div className="p-2">
