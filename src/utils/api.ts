@@ -2,8 +2,9 @@ import axios from 'axios';
 import { Pool, PoolValidation, HealthStatus, AdvancedLPAnalysis, OHLCVCandle } from '../types';
 
 // Create axios instance with base configuration
+// Use relative path /api to leverage Vercel's proxy to backend
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://hederalp-backend.onrender.com',
+  baseURL: '/api',
   timeout: 30000, // 30 seconds for complex calculations
   headers: {
     'Content-Type': 'application/json',
