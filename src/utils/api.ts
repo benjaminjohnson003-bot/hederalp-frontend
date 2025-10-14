@@ -2,13 +2,15 @@ import axios from 'axios';
 import { Pool, PoolValidation, HealthStatus, AdvancedLPAnalysis, OHLCVCandle } from '../types';
 
 // Create axios instance with base configuration
-// Use relative path /api to leverage Vercel's proxy to backend
+// Call backend directly - CORS is configured on backend to allow hederalp.com
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://hederalp-backend.onrender.com',
   timeout: 30000, // 30 seconds for complex calculations
   headers: {
     'Content-Type': 'application/json',
   },
+  // Follow redirects
+  maxRedirects: 5,
 });
 
 // Request interceptor for logging
