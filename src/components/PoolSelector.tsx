@@ -47,8 +47,23 @@ const PoolSelector: React.FC = () => {
       const result = await apiClient.validatePool(poolId);
       setValidationResult(result);
       
-      if (result.valid && result.pool_info) {
-        setSelectedPool(result.pool_info);
+      if (result.valid && result.pool_id) {
+        // Find the full pool info from available pools
+        const fullPoolInfo = availablePools.find(p => p.id === result.pool_id);
+        if (fullPoolInfo) {
+          setSelectedPool(fullPoolInfo);
+          // Update validation result with pool info
+          setValidationResult({ ...result, pool_info: fullPoolInfo });
+        } else {
+          // Pool is valid but not in our known pools list - still set it
+          setSelectedPool({
+            id: result.pool_id,
+            name: result.pool_id,
+            token0_symbol: 'Unknown',
+            token1_symbol: 'Unknown',
+            fee_tier: 'Unknown',
+          } as Pool);
+        }
       } else {
         setSelectedPool(null);
       }
