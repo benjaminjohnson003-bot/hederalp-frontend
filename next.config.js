@@ -60,7 +60,7 @@ const nextConfig = {
               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
               img-src 'self' data: https: blob:;
               font-src 'self' data: https://fonts.gstatic.com;
-              connect-src 'self' https://hederalp-backend.onrender.com https://api.saucerswap.finance https://vercel.live wss://ws-us3.pusher.com;
+              connect-src 'self' https://hederalp-backend.onrender.com https://api.saucerswap.finance https://vercel.live wss://ws-us3.pusher.com https://fonts.googleapis.com;
               frame-src 'none';
               object-src 'none';
               base-uri 'self';
