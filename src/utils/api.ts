@@ -67,8 +67,20 @@ export const apiClient = {
   },
 
   async validatePool(poolId: string): Promise<PoolValidation> {
-    const response = await api.get<PoolValidation>(`/test-pool-id?pool_id=${encodeURIComponent(poolId)}`);
-    return response.data;
+    const response = await api.get<{
+      pool_id: string;
+      test_result: string;
+      transaction_count: number;
+      message: string;
+    }>(`/test-pool-id?pool_id=${encodeURIComponent(poolId)}`);
+    
+    // Transform backend response to match frontend PoolValidation interface
+    const isValid = response.data.test_result === 'success';
+    return {
+      valid: isValid,
+      pool_id: response.data.pool_id,
+      error: isValid ? undefined : response.data.message,
+    };
   },
 
   // OHLCV Data
