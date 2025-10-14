@@ -56,12 +56,18 @@ export const apiClient = {
 
   // Pool Management
   async getPools(): Promise<Pool[]> {
-    const response = await api.get<Pool[]>('/pools/enhanced');
-    return response.data;
+    const response = await api.get<{known_pools: Record<string, any>}>('/pools');
+    // Convert the known_pools object to an array for the frontend
+    const pools = Object.entries(response.data.known_pools).map(([name, pool]: [string, any]) => ({
+      id: pool.pool_id || '',
+      name: name,
+      ...pool
+    }));
+    return pools as Pool[];
   },
 
   async validatePool(poolId: string): Promise<PoolValidation> {
-    const response = await api.get<PoolValidation>(`/pools/verify?pool_id=${encodeURIComponent(poolId)}`);
+    const response = await api.get<PoolValidation>(`/test-pool-id?pool_id=${encodeURIComponent(poolId)}`);
     return response.data;
   },
 
