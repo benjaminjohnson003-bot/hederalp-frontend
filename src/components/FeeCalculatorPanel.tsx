@@ -1,13 +1,34 @@
-import React, { useState } from 'react';
-import { Calculator, TrendingUp, TrendingDown, BarChart3, Activity, Settings } from 'lucide-react';
-import ReactSlider from 'react-slider';
+import React, { useState, useEffect } from 'react';
+import { Calculator, Plus, Minus, AlertCircle, Info } from 'lucide-react';
 import { useLPStrategyStore } from '../store/lpStrategyStore';
-import { apiClient, formatCurrency, formatPercentage } from '../utils/api';
-import HelpTooltip, { HELP_CONTENT } from './HelpTooltip';
+import { apiClient } from '../utils/api';
 
 const FeeCalculatorPanel: React.FC = () => {
   const { form, setForm, selectedPool, setResults, setLoading, setError } = useLPStrategyStore();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [currentPrice, setCurrentPrice] = useState<number>(0);
+
+  // Fetch current price when pool is selected
+  useEffect(() => {
+    if (selectedPool) {
+      // Try to get real current price from recent OHLCV data
+      apiClient.getOHLCVData(selectedPool.id, '1H', 1)
+        .then(data => {
+          if (data.candles && data.candles.length > 0) {
+            const latestPrice = data.candles[data.candles.length - 1].close;
+            setCurrentPrice(latestPrice);
+            
+            // Set default range around current price if not already set
+            if (form.priceLower === 0.22 && form.priceUpper === 0.26) {
+              const lower = latestPrice * 0.9; // -10%
+              const upper = latestPrice * 1.1; // +10%
+              setForm({ priceLower: lower, priceUpper: upper });
+            }
+          }
+        })
+        .catch(err => console.error('Failed to fetch current price:', err));
+    }
+  }, [selectedPool]);
 
   const handleAnalyze = async () => {
     if (!selectedPool) {
@@ -16,7 +37,7 @@ const FeeCalculatorPanel: React.FC = () => {
     }
 
     if (form.priceLower >= form.priceUpper) {
-      setError('Lower price must be less than upper price');
+      setError('Min price must be less than max price');
       return;
     }
 
@@ -53,263 +74,304 @@ const FeeCalculatorPanel: React.FC = () => {
     }
   };
 
-  const rangeWidth = ((form.priceUpper - form.priceLower) / form.priceLower) * 100;
-  const currentPrice = selectedPool ? 0.24 : 0; // TODO: Get real current price
+  const rangeWidth = currentPrice > 0 ? ((form.priceUpper - form.priceLower) / currentPrice) * 100 : 0;
+  const pricePosition = currentPrice > 0 ? ((currentPrice - form.priceLower) / (form.priceUpper - form.priceLower)) * 100 : 50;
   const isInRange = currentPrice >= form.priceLower && currentPrice <= form.priceUpper;
+
+  // Quick preset buttons
+  const setRangePreset = (percentage: number) => {
+    if (currentPrice > 0) {
+      const lower = currentPrice * (1 - percentage / 100);
+      const upper = currentPrice * (1 + percentage / 100);
+      setForm({ priceLower: lower, priceUpper: upper });
+    }
+  };
 
   return (
     <div className="space-y-6">
-      {/* Price Range Configuration */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <h3 className="text-lg font-medium text-gray-900">Price Range</h3>
-            <HelpTooltip {...HELP_CONTENT.priceRange} />
+      {/* Current Price Display */}
+      {selectedPool && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-sm text-gray-600 mb-1">Current Price</div>
+              <div className="text-3xl font-bold text-gray-900">
+                {currentPrice > 0 ? currentPrice.toFixed(6) : '...'}{' '}
+                <span className="text-lg text-gray-600">
+                  {selectedPool.token1_symbol} per {selectedPool.token0_symbol}
+                </span>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-sm text-gray-600 mb-1">Pool</div>
+              <div className="text-xl font-semibold text-gray-900">
+                {selectedPool.token0_symbol}/{selectedPool.token1_symbol}
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                Fee: {selectedPool.fee_tier || '0.15%'}
+              </div>
+            </div>
           </div>
-          <div className="text-sm text-gray-600">
-            Width: {formatPercentage(rangeWidth)}
+        </div>
+      )}
+
+      {/* Visual Price Range Selector */}
+      <div className="card">
+        <h3 className="text-lg font-semibold mb-4 flex items-center">
+          <BarChart3 className="w-5 h-5 mr-2 text-primary-600" />
+          Set Price Range
+        </h3>
+
+        {/* Visual Range Display */}
+        <div className="mb-6 bg-gray-50 rounded-lg p-4">
+          <div className="relative h-32 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-100 rounded-lg overflow-hidden">
+            {/* Current Price Indicator */}
+            {currentPrice > 0 && isInRange && (
+              <div
+                className="absolute top-0 bottom-0 w-1 bg-green-500 z-10"
+                style={{ left: `${Math.max(0, Math.min(100, pricePosition))}%` }}
+              >
+                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                  Current: {currentPrice.toFixed(4)}
+                </div>
+              </div>
+            )}
+            
+            {/* Range Boundaries */}
+            <div className="absolute top-0 bottom-0 left-0 w-1 bg-purple-500">
+              <div className="absolute -top-6 left-0 bg-purple-500 text-white text-xs px-2 py-1 rounded">
+                Min
+              </div>
+            </div>
+            <div className="absolute top-0 bottom-0 right-0 w-1 bg-cyan-500">
+              <div className="absolute -top-6 right-0 bg-cyan-500 text-white text-xs px-2 py-1 rounded">
+                Max
+              </div>
+            </div>
+
+            {/* Range Info */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-white/90 px-4 py-2 rounded-lg shadow-sm">
+                <div className="text-sm font-medium text-gray-900">
+                  Range Width: ±{(rangeWidth / 2).toFixed(1)}%
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Preset Buttons */}
+          <div className="mt-4 flex gap-2">
+            <button
+              onClick={() => setRangePreset(5)}
+              className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              ±5%
+            </button>
+            <button
+              onClick={() => setRangePreset(10)}
+              className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              ±10%
+            </button>
+            <button
+              onClick={() => setRangePreset(20)}
+              className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              ±20%
+            </button>
+            <button
+              onClick={() => setRangePreset(30)}
+              className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              ±30%
+            </button>
           </div>
         </div>
 
-        {/* Current Price Indicator */}
-        {selectedPool && (
-          <div className="bg-gray-50 rounded-lg p-3">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Current Price (estimated)</span>
-              <span className="font-medium">${currentPrice.toFixed(6)}</span>
+        {/* Price Range Inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {/* Min Price */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Min Price
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                value={form.priceLower}
+                onChange={(e) => setForm({ priceLower: parseFloat(e.target.value) || 0 })}
+                step="0.0001"
+                className="input w-full text-lg font-mono"
+                placeholder="0.0"
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
+                <button
+                  onClick={() => setForm({ priceLower: form.priceLower * 0.95 })}
+                  className="p-1 hover:bg-gray-100 rounded"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setForm({ priceLower: form.priceLower * 1.05 })}
+                  className="p-1 hover:bg-gray-100 rounded"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
             </div>
-            <div className={`text-xs mt-1 ${isInRange ? 'text-success-600' : 'text-warning-600'}`}>
-              {isInRange ? '✓ In range' : '⚠ Out of range'}
+            <div className="text-xs text-gray-500 mt-1">
+              {selectedPool && `${selectedPool.token1_symbol} per ${selectedPool.token0_symbol}`}
+            </div>
+          </div>
+
+          {/* Max Price */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Max Price
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                value={form.priceUpper}
+                onChange={(e) => setForm({ priceUpper: parseFloat(e.target.value) || 0 })}
+                step="0.0001"
+                className="input w-full text-lg font-mono"
+                placeholder="0.0"
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
+                <button
+                  onClick={() => setForm({ priceUpper: form.priceUpper * 0.95 })}
+                  className="p-1 hover:bg-gray-100 rounded"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setForm({ priceUpper: form.priceUpper * 1.05 })}
+                  className="p-1 hover:bg-gray-100 rounded"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {selectedPool && `${selectedPool.token1_symbol} per ${selectedPool.token0_symbol}`}
+            </div>
+          </div>
+        </div>
+
+        {/* Warning if out of range */}
+        {currentPrice > 0 && !isInRange && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 flex items-start space-x-2">
+            <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-yellow-800">
+              <strong>Warning:</strong> Current price ({currentPrice.toFixed(4)}) is outside your selected range. 
+              Your position will not earn fees until the price moves into range.
             </div>
           </div>
         )}
 
-        {/* Price Range Sliders */}
-        <div className="space-y-4">
-          {/* Lower Price */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label htmlFor="price-lower" className="text-sm font-medium text-gray-700">
-                Lower Price
-              </label>
-              <input
-                id="price-lower"
-                type="number"
-                value={form.priceLower}
-                onChange={(e) => setForm({ priceLower: parseFloat(e.target.value) || 0 })}
-                step="0.001"
-                min="0"
-                max={form.priceUpper - 0.001}
-                className="input w-24 text-sm"
-              />
+        {/* Info box */}
+        {isInRange && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4 flex items-start space-x-2">
+            <Info className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-green-800">
+              <strong>In Range:</strong> Your position will earn fees at the current price.
             </div>
-            <ReactSlider
-              value={form.priceLower}
-              onChange={(value) => setForm({ priceLower: value })}
-              min={0}
-              max={form.priceUpper - 0.001}
-              step={0.001}
-              className="w-full h-2 bg-gray-200 rounded-lg"
-              thumbClassName="w-5 h-5 bg-primary-600 rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-              trackClassName="h-2 bg-primary-200 rounded-lg"
-            />
           </div>
-
-          {/* Upper Price */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label htmlFor="price-upper" className="text-sm font-medium text-gray-700">
-                Upper Price
-              </label>
-              <input
-                id="price-upper"
-                type="number"
-                value={form.priceUpper}
-                onChange={(e) => setForm({ priceUpper: parseFloat(e.target.value) || 0 })}
-                step="0.001"
-                min={form.priceLower + 0.001}
-                max="1"
-                className="input w-24 text-sm"
-              />
-            </div>
-            <ReactSlider
-              value={form.priceUpper}
-              onChange={(value) => setForm({ priceUpper: value })}
-              min={form.priceLower + 0.001}
-              max={1}
-              step={0.001}
-              className="w-full h-2 bg-gray-200 rounded-lg"
-              thumbClassName="w-5 h-5 bg-primary-600 rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-              trackClassName="h-2 bg-primary-200 rounded-lg"
-            />
-          </div>
-        </div>
-
-        {/* Visual Range Indicator */}
-        <div className="relative h-8 bg-gray-100 rounded-lg overflow-hidden">
-          <div
-            className="absolute h-full bg-primary-200 border-l-2 border-r-2 border-primary-600"
-            style={{
-              left: `${(form.priceLower / 1) * 100}%`,
-              width: `${((form.priceUpper - form.priceLower) / 1) * 100}%`,
-            }}
-          />
-          {currentPrice > 0 && (
-            <div
-              className="absolute top-0 bottom-0 w-0.5 bg-red-500"
-              style={{
-                left: `${(currentPrice / 1) * 100}%`,
-              }}
-              title={`Current price: $${currentPrice.toFixed(6)}`}
-            />
-          )}
-        </div>
+        )}
       </div>
 
       {/* Liquidity Amount */}
-      <div>
-        <label htmlFor="liquidity-usd" className="block text-sm font-medium text-gray-700 mb-2">
+      <div className="card">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
           Liquidity Amount (USD)
         </label>
         <input
-          id="liquidity-usd"
           type="number"
           value={form.liquidityUsd}
           onChange={(e) => setForm({ liquidityUsd: parseFloat(e.target.value) || 0 })}
-          min="1"
-          step="100"
-          className="input w-full"
+          className="input w-full text-xl font-semibold"
           placeholder="10000"
         />
-        <div className="mt-2 flex space-x-2">
-          {[1000, 5000, 10000, 50000].map((amount) => (
-            <button
-              key={amount}
-              onClick={() => setForm({ liquidityUsd: amount })}
-              className={`btn btn-secondary text-xs px-3 py-1 ${
-                form.liquidityUsd === amount ? 'bg-primary-100 text-primary-700 border-primary-300' : ''
-              }`}
-            >
-              {formatCurrency(amount, 0)}
-            </button>
-          ))}
+        <div className="text-xs text-gray-500 mt-1">
+          Total value of tokens to provide as liquidity
         </div>
       </div>
 
-      {/* Scenario Configuration */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="bear-drop" className="block text-sm font-medium text-gray-700 mb-2">
-            <TrendingDown className="w-4 h-4 inline mr-1 text-danger-600" />
-            Bear Case Drop (%)
-          </label>
-          <input
-            id="bear-drop"
-            type="number"
-            value={form.bearCaseDrop}
-            onChange={(e) => setForm({ bearCaseDrop: parseFloat(e.target.value) || 0 })}
-            min="1"
-            max="90"
-            step="1"
-            className="input w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="bull-rise" className="block text-sm font-medium text-gray-700 mb-2">
-            <TrendingUp className="w-4 h-4 inline mr-1 text-success-600" />
-            Bull Case Rise (%)
-          </label>
-          <input
-            id="bull-rise"
-            type="number"
-            value={form.bullCaseRise}
-            onChange={(e) => setForm({ bullCaseRise: parseFloat(e.target.value) || 0 })}
-            min="1"
-            max="500"
-            step="1"
-            className="input w-full"
-          />
-        </div>
-      </div>
-
-      {/* Time Horizon */}
-      <div>
-        <label htmlFor="time-horizon" className="block text-sm font-medium text-gray-700 mb-2">
-          Time Horizon (Days)
-        </label>
-        <select
-          id="time-horizon"
-          value={form.timeHorizonDays}
-          onChange={(e) => setForm({ timeHorizonDays: parseInt(e.target.value) })}
-          className="input w-full"
-        >
-          <option value={7}>7 days</option>
-          <option value={14}>2 weeks</option>
-          <option value={30}>1 month</option>
-          <option value={60}>2 months</option>
-          <option value={90}>3 months</option>
-          <option value={180}>6 months</option>
-        </select>
-      </div>
-
-      {/* Advanced Options */}
-      <div className="border-t border-gray-200 pt-4">
-        <h3 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
-          <Settings className="w-4 h-4 mr-2" />
-          Advanced Options
-        </h3>
-        
-        <div className="space-y-3">
-          <label className="flex items-center space-x-3 cursor-pointer">
+      {/* Analysis Parameters (Collapsible) */}
+      <details className="card">
+        <summary className="cursor-pointer text-sm font-medium text-gray-700 mb-4">
+          Advanced Settings (Optional)
+        </summary>
+        <div className="space-y-4 mt-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Time Horizon (Days)
+            </label>
             <input
-              type="checkbox"
-              checked={form.advancedMode}
-              onChange={(e) => setForm({ advancedMode: e.target.checked })}
-              className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              type="number"
+              value={form.timeHorizonDays}
+              onChange={(e) => setForm({ timeHorizonDays: parseInt(e.target.value) || 30 })}
+              className="input w-full"
+              min="1"
+              max="365"
             />
-            <div className="flex-1">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-900">
-                  <BarChart3 className="w-4 h-4 inline mr-1" />
-                  Monte Carlo Simulation
-                </span>
-                <HelpTooltip {...HELP_CONTENT.monteCarlo} size="sm" />
-              </div>
-              <p className="text-xs text-gray-600">
-                Run 1000 simulations using historical volatility
-              </p>
-            </div>
-          </label>
+          </div>
 
-          <label className="flex items-center space-x-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={form.backtestMode}
-              onChange={(e) => setForm({ backtestMode: e.target.checked })}
-              className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-            />
-            <div className="flex-1">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-900">
-                  <Activity className="w-4 h-4 inline mr-1" />
-                  Historical Backtesting
-                </span>
-                <HelpTooltip {...HELP_CONTENT.backtesting} size="sm" />
-              </div>
-              <p className="text-xs text-gray-600">
-                Compare LP strategy vs HODL using historical data
-              </p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Bear Case Drop (%)
+              </label>
+              <input
+                type="number"
+                value={form.bearCaseDrop}
+                onChange={(e) => setForm({ bearCaseDrop: parseFloat(e.target.value) || 20 })}
+                className="input w-full"
+              />
             </div>
-          </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Bull Case Rise (%)
+              </label>
+              <input
+                type="number"
+                value={form.bullCaseRise}
+                onChange={(e) => setForm({ bullCaseRise: parseFloat(e.target.value) || 20 })}
+                className="input w-full"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="flex items-center space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.advancedMode}
+                onChange={(e) => setForm({ advancedMode: e.target.checked })}
+                className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              />
+              <span className="text-sm text-gray-700">Enable Monte Carlo Simulation</span>
+            </label>
+
+            <label className="flex items-center space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.backtestMode}
+                onChange={(e) => setForm({ backtestMode: e.target.checked })}
+                className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+              />
+              <span className="text-sm text-gray-700">Enable Historical Backtesting</span>
+            </label>
+          </div>
         </div>
-      </div>
+      </details>
 
       {/* Analyze Button */}
       <button
         onClick={handleAnalyze}
         disabled={!selectedPool || isAnalyzing || form.priceLower >= form.priceUpper}
-        className="btn btn-primary w-full py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn btn-primary w-full py-4 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isAnalyzing ? (
           <div className="flex items-center justify-center space-x-2">
@@ -318,31 +380,11 @@ const FeeCalculatorPanel: React.FC = () => {
           </div>
         ) : (
           <div className="flex items-center justify-center space-x-2">
-            <Calculator className="w-5 h-5" />
+            <Calculator className="w-6 h-6" />
             <span>Analyze LP Strategy</span>
           </div>
         )}
       </button>
-
-      {/* Quick Info */}
-      {selectedPool && (
-        <div className="bg-blue-50 rounded-lg p-4 text-sm">
-          <div className="font-medium text-blue-900 mb-2">Analysis Preview</div>
-          <div className="space-y-1 text-blue-800">
-            <div>Pool: {selectedPool.token0_symbol}/{selectedPool.token1_symbol}</div>
-            <div>Range: ${form.priceLower.toFixed(6)} - ${form.priceUpper.toFixed(6)} ({formatPercentage(rangeWidth)} width)</div>
-            <div>Liquidity: {formatCurrency(form.liquidityUsd)}</div>
-            <div>Time Horizon: {form.timeHorizonDays} days</div>
-            {(form.advancedMode || form.backtestMode) && (
-              <div className="text-xs mt-2 text-blue-600">
-                {form.advancedMode && '• Monte Carlo simulation enabled'}
-                {form.advancedMode && form.backtestMode && <br />}
-                {form.backtestMode && '• Historical backtesting enabled'}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
