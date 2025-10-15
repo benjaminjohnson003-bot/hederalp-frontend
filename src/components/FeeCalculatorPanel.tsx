@@ -197,7 +197,7 @@ const FeeCalculatorPanel: React.FC = () => {
                 style={{ left: `${Math.max(0, Math.min(100, pricePosition))}%` }}
               >
                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                  Current: {currentPrice.toFixed(4)}
+                  Current: {typeof currentPrice === 'number' && !isNaN(currentPrice) ? currentPrice.toFixed(4) : 'N/A'}
                 </div>
               </div>
             )}
@@ -218,7 +218,7 @@ const FeeCalculatorPanel: React.FC = () => {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="bg-white/90 px-4 py-2 rounded-lg shadow-sm">
                 <div className="text-sm font-medium text-gray-900">
-                  Range Width: ±{(rangeWidth / 2).toFixed(1)}%
+                  Range Width: ±{typeof rangeWidth === 'number' && !isNaN(rangeWidth) ? (rangeWidth / 2).toFixed(1) : '0'}%
                 </div>
               </div>
             </div>
