@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, Plus, Minus, AlertCircle, Info, BarChart3 } from 'lucide-react';
+import { Calculator, Plus, Minus, AlertCircle, Info, BarChart3, RefreshCw } from 'lucide-react';
 import { useLPStrategyStore } from '../store/lpStrategyStore';
 import { apiClient } from '../utils/api';
 
@@ -7,8 +7,10 @@ const FeeCalculatorPanel: React.FC = () => {
   const { form, setForm, selectedPool, setResults, setLoading, setError } = useLPStrategyStore();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
+  const [currentAPR, setCurrentAPR] = useState<number | null>(null);
+  const [isPriceInverted, setIsPriceInverted] = useState(false);
 
-  // Fetch current price when pool is selected
+  // Fetch current price and APR when pool is selected
   useEffect(() => {
     if (selectedPool) {
       // Try to get real current price from recent OHLCV data
@@ -27,8 +29,33 @@ const FeeCalculatorPanel: React.FC = () => {
           }
         })
         .catch(err => console.error('Failed to fetch current price:', err));
+      
+      // Get APR from pool data if available
+      if (selectedPool.apr) {
+        setCurrentAPR(selectedPool.apr);
+      }
     }
   }, [selectedPool]);
+
+  // Get display price (inverted or not)
+  const getDisplayPrice = (price: number) => {
+    return isPriceInverted ? (1 / price) : price;
+  };
+
+  // Get token labels based on inversion
+  const getTokenLabels = () => {
+    if (!selectedPool) return { base: '', quote: '' };
+    if (isPriceInverted) {
+      return {
+        base: selectedPool.token0_symbol,
+        quote: selectedPool.token1_symbol,
+      };
+    }
+    return {
+      base: selectedPool.token1_symbol,
+      quote: selectedPool.token0_symbol,
+    };
+  };
 
   const handleAnalyze = async () => {
     if (!selectedPool) {
@@ -87,18 +114,29 @@ const FeeCalculatorPanel: React.FC = () => {
     }
   };
 
+  const tokenLabels = getTokenLabels();
+
   return (
     <div className="space-y-6">
       {/* Current Price Display */}
       {selectedPool && (
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm text-gray-600 mb-1">Current Price</div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex-1">
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="text-sm text-gray-600">Current Price</div>
+                <button
+                  onClick={() => setIsPriceInverted(!isPriceInverted)}
+                  className="p-1 hover:bg-blue-100 rounded-full transition-colors"
+                  title="Invert price"
+                >
+                  <RefreshCw className="w-4 h-4 text-blue-600" />
+                </button>
+              </div>
               <div className="text-3xl font-bold text-gray-900">
-                {currentPrice > 0 ? currentPrice.toFixed(6) : '...'}{' '}
+                {currentPrice > 0 ? getDisplayPrice(currentPrice).toFixed(6) : '...'}{' '}
                 <span className="text-lg text-gray-600">
-                  {selectedPool.token1_symbol} per {selectedPool.token0_symbol}
+                  {tokenLabels.base} per {tokenLabels.quote}
                 </span>
               </div>
             </div>
@@ -112,6 +150,21 @@ const FeeCalculatorPanel: React.FC = () => {
               </div>
             </div>
           </div>
+          
+          {/* APR Display */}
+          {currentAPR !== null && (
+            <div className="pt-4 border-t border-blue-200">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-600">Current APR</div>
+                <div className="text-2xl font-bold text-green-600">
+                  {currentAPR.toFixed(2)}%
+                </div>
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                Based on recent trading volume and fees
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -220,7 +273,7 @@ const FeeCalculatorPanel: React.FC = () => {
               </div>
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              {selectedPool && `${selectedPool.token1_symbol} per ${selectedPool.token0_symbol}`}
+              {tokenLabels.base} per {tokenLabels.quote}
             </div>
           </div>
 
@@ -254,7 +307,7 @@ const FeeCalculatorPanel: React.FC = () => {
               </div>
             </div>
             <div className="text-xs text-gray-500 mt-1">
-              {selectedPool && `${selectedPool.token1_symbol} per ${selectedPool.token0_symbol}`}
+              {tokenLabels.base} per {tokenLabels.quote}
             </div>
           </div>
         </div>
