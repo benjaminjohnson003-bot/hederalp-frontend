@@ -5,7 +5,6 @@ import HealthStatusIndicator from './components/HealthStatusIndicator';
 import PoolSelector from './components/PoolSelector';
 import FeeCalculatorPanel from './components/FeeCalculatorPanel';
 import ResultsSection from './components/ResultsSection';
-import UXShowcase from './components/UXShowcase';
 import PerformanceDashboard from './components/PerformanceDashboard';
 // import ResponsiveLayout from './components/ResponsiveLayout';
 
@@ -70,9 +69,6 @@ function App() {
               </div>
             </div>
           </div>
-
-          {/* UX Showcase */}
-          <UXShowcase />
 
           {/* Results Section */}
           {ui.isLoading || ui.error || useLPStrategyStore.getState().results ? (
