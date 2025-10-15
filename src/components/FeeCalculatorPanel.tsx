@@ -46,7 +46,8 @@ const FeeCalculatorPanel: React.FC = () => {
   }, [selectedPool]);
 
   // Get display price (inverted or not)
-  const getDisplayPrice = (price: number) => {
+  const getDisplayPrice = (price: number): number => {
+    if (!price || price === 0) return 0;
     return isPriceInverted ? (1 / price) : price;
   };
 
@@ -142,7 +143,7 @@ const FeeCalculatorPanel: React.FC = () => {
                 </button>
               </div>
               <div className="text-3xl font-bold text-gray-900">
-                {currentPrice > 0 ? getDisplayPrice(currentPrice).toFixed(6) : '...'}{' '}
+                {currentPrice > 0 ? Number(getDisplayPrice(currentPrice)).toFixed(6) : '...'}{' '}
                 <span className="text-lg text-gray-600">
                   {tokenLabels.base} per {tokenLabels.quote}
                 </span>
@@ -160,12 +161,12 @@ const FeeCalculatorPanel: React.FC = () => {
           </div>
           
           {/* APR Display */}
-          {currentAPR !== null && (
+          {currentAPR !== null && !isNaN(currentAPR) && (
             <div className="pt-4 border-t border-blue-200">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">Current APR</div>
                 <div className="text-2xl font-bold text-green-600">
-                  {currentAPR.toFixed(2)}%
+                  {Number(currentAPR).toFixed(2)}%
                 </div>
               </div>
               <div className="text-xs text-gray-500 mt-1">
