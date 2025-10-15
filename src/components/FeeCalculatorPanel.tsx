@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, Plus, Minus, AlertCircle, Info } from 'lucide-react';
+import { Calculator, Plus, Minus, AlertCircle, Info, BarChart3 } from 'lucide-react';
 import { useLPStrategyStore } from '../store/lpStrategyStore';
 import { apiClient } from '../utils/api';
 
