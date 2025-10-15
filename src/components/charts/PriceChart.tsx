@@ -255,19 +255,19 @@ const PriceChart: React.FC<PriceChartProps> = ({
             <div>
               <div className="text-gray-600">Current Price</div>
               <div className="font-semibold">
-                ${candles[candles.length - 1]?.close.toFixed(6)}
+                ${typeof candles[candles.length - 1]?.close === 'number' ? candles[candles.length - 1]?.close.toFixed(6) : 'N/A'}
               </div>
             </div>
             <div>
               <div className="text-gray-600">24h High</div>
               <div className="font-semibold text-success-600">
-                ${Math.max(...candles.map(c => c.high)).toFixed(6)}
+                ${(() => { const high = Math.max(...candles.map(c => c.high)); return typeof high === 'number' && !isNaN(high) ? high.toFixed(6) : 'N/A'; })()}
               </div>
             </div>
             <div>
               <div className="text-gray-600">24h Low</div>
               <div className="font-semibold text-danger-600">
-                ${Math.min(...candles.map(c => c.low)).toFixed(6)}
+                ${(() => { const low = Math.min(...candles.map(c => c.low)); return typeof low === 'number' && !isNaN(low) ? low.toFixed(6) : 'N/A'; })()}
               </div>
             </div>
             <div>
