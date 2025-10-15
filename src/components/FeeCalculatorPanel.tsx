@@ -13,9 +13,9 @@ const FeeCalculatorPanel: React.FC = () => {
   // Fetch current price and APR when pool is selected
   useEffect(() => {
     if (selectedPool) {
-      // Try to get real current price from recent OHLCV data
+      // Try to get real current price and APR from recent OHLCV data
       apiClient.getOHLCVData(selectedPool.id, '1H', 1)
-        .then(data => {
+        .then((data: any) => {
           if (data.candles && data.candles.length > 0) {
             const latestPrice = data.candles[data.candles.length - 1].close;
             setCurrentPrice(latestPrice);
@@ -26,6 +26,11 @@ const FeeCalculatorPanel: React.FC = () => {
               const upper = latestPrice * 1.1; // +10%
               setForm({ priceLower: lower, priceUpper: upper });
             }
+          }
+          
+          // Extract APR from summary if available
+          if (data.summary && data.summary.apr && data.summary.apr.estimated_apr) {
+            setCurrentAPR(data.summary.apr.estimated_apr);
           }
         })
         .catch(err => console.error('Failed to fetch current price:', err));
