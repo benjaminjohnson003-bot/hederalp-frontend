@@ -263,13 +263,13 @@ const FeeCalculatorPanel: React.FC = () => {
             <div className="relative">
               <input
                 type="number"
-                value={getDisplayPrice(form.priceLower).toFixed(6)}
+                value={isPriceInverted ? (1 / form.priceUpper).toFixed(6) : form.priceLower.toFixed(6)}
                 onChange={(e) => {
                   const displayValue = parseFloat(e.target.value) || 0;
                   if (isPriceInverted) {
-                    // When inverted, the "min" display value corresponds to the "max" actual value
-                    const actualValue = 1 / displayValue;
-                    setForm({ priceUpper: actualValue });
+                    // When inverted, min display = 1/priceUpper
+                    // So when user types new min, we set priceUpper = 1/newMin
+                    setForm({ priceUpper: 1 / displayValue });
                   } else {
                     setForm({ priceLower: displayValue });
                   }
@@ -280,13 +280,25 @@ const FeeCalculatorPanel: React.FC = () => {
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
                 <button
-                  onClick={() => setForm({ priceLower: form.priceLower * 0.95 })}
+                  onClick={() => {
+                    if (isPriceInverted) {
+                      setForm({ priceUpper: form.priceUpper / 0.95 });
+                    } else {
+                      setForm({ priceLower: form.priceLower * 0.95 });
+                    }
+                  }}
                   className="p-1 hover:bg-gray-100 rounded"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => setForm({ priceLower: form.priceLower * 1.05 })}
+                  onClick={() => {
+                    if (isPriceInverted) {
+                      setForm({ priceUpper: form.priceUpper / 1.05 });
+                    } else {
+                      setForm({ priceLower: form.priceLower * 1.05 });
+                    }
+                  }}
                   className="p-1 hover:bg-gray-100 rounded"
                 >
                   <Plus className="w-4 h-4" />
@@ -306,13 +318,13 @@ const FeeCalculatorPanel: React.FC = () => {
             <div className="relative">
               <input
                 type="number"
-                value={getDisplayPrice(form.priceUpper).toFixed(6)}
+                value={isPriceInverted ? (1 / form.priceLower).toFixed(6) : form.priceUpper.toFixed(6)}
                 onChange={(e) => {
                   const displayValue = parseFloat(e.target.value) || 0;
                   if (isPriceInverted) {
-                    // When inverted, the "max" display value corresponds to the "min" actual value
-                    const actualValue = 1 / displayValue;
-                    setForm({ priceLower: actualValue });
+                    // When inverted, max display = 1/priceLower
+                    // So when user types new max, we set priceLower = 1/newMax
+                    setForm({ priceLower: 1 / displayValue });
                   } else {
                     setForm({ priceUpper: displayValue });
                   }
@@ -323,13 +335,25 @@ const FeeCalculatorPanel: React.FC = () => {
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
                 <button
-                  onClick={() => setForm({ priceUpper: form.priceUpper * 0.95 })}
+                  onClick={() => {
+                    if (isPriceInverted) {
+                      setForm({ priceLower: form.priceLower / 0.95 });
+                    } else {
+                      setForm({ priceUpper: form.priceUpper * 0.95 });
+                    }
+                  }}
                   className="p-1 hover:bg-gray-100 rounded"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => setForm({ priceUpper: form.priceUpper * 1.05 })}
+                  onClick={() => {
+                    if (isPriceInverted) {
+                      setForm({ priceLower: form.priceLower / 1.05 });
+                    } else {
+                      setForm({ priceUpper: form.priceUpper * 1.05 });
+                    }
+                  }}
                   className="p-1 hover:bg-gray-100 rounded"
                 >
                   <Plus className="w-4 h-4" />
