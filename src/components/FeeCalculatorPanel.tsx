@@ -337,7 +337,7 @@ const FeeCalculatorPanel: React.FC = () => {
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 flex items-start space-x-2">
             <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-yellow-800">
-              <strong>Warning:</strong> Current price ({typeof currentPrice === 'number' && !isNaN(currentPrice) ? currentPrice.toFixed(4) : 'N/A'}) is outside your selected range. 
+              <strong>Warning:</strong> Current price ({typeof currentPrice === 'number' && !isNaN(currentPrice) ? getDisplayPrice(currentPrice).toFixed(6) : 'N/A'} {tokenLabels.base} per {tokenLabels.quote}) is outside your selected range. 
               Your position will not earn fees until the price moves into range.
             </div>
           </div>
