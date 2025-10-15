@@ -266,8 +266,13 @@ const FeeCalculatorPanel: React.FC = () => {
                 value={getDisplayPrice(form.priceLower).toFixed(6)}
                 onChange={(e) => {
                   const displayValue = parseFloat(e.target.value) || 0;
-                  const actualValue = isPriceInverted ? (1 / displayValue) : displayValue;
-                  setForm({ priceLower: actualValue });
+                  if (isPriceInverted) {
+                    // When inverted, the "min" display value corresponds to the "max" actual value
+                    const actualValue = 1 / displayValue;
+                    setForm({ priceUpper: actualValue });
+                  } else {
+                    setForm({ priceLower: displayValue });
+                  }
                 }}
                 step="0.0001"
                 className="input w-full text-lg font-mono"
@@ -304,8 +309,13 @@ const FeeCalculatorPanel: React.FC = () => {
                 value={getDisplayPrice(form.priceUpper).toFixed(6)}
                 onChange={(e) => {
                   const displayValue = parseFloat(e.target.value) || 0;
-                  const actualValue = isPriceInverted ? (1 / displayValue) : displayValue;
-                  setForm({ priceUpper: actualValue });
+                  if (isPriceInverted) {
+                    // When inverted, the "max" display value corresponds to the "min" actual value
+                    const actualValue = 1 / displayValue;
+                    setForm({ priceLower: actualValue });
+                  } else {
+                    setForm({ priceUpper: displayValue });
+                  }
                 }}
                 step="0.0001"
                 className="input w-full text-lg font-mono"
