@@ -363,6 +363,77 @@ const FeeCalculatorPanel: React.FC = () => {
         </div>
       </div>
 
+      {/* Fee Calculation Duration */}
+      <div className="card">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Fee Calculation Duration
+        </label>
+        <div className="space-y-3">
+          {/* Preset Duration Buttons */}
+          <div className="grid grid-cols-4 gap-2">
+            <button
+              onClick={() => setForm({ timeHorizonDays: 1 })}
+              className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                form.timeHorizonDays === 1
+                  ? 'bg-primary-600 text-white border-primary-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              1 Day
+            </button>
+            <button
+              onClick={() => setForm({ timeHorizonDays: 7 })}
+              className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                form.timeHorizonDays === 7
+                  ? 'bg-primary-600 text-white border-primary-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              7 Days
+            </button>
+            <button
+              onClick={() => setForm({ timeHorizonDays: 30 })}
+              className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                form.timeHorizonDays === 30
+                  ? 'bg-primary-600 text-white border-primary-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              30 Days
+            </button>
+            <button
+              onClick={() => setForm({ timeHorizonDays: 90 })}
+              className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                form.timeHorizonDays === 90
+                  ? 'bg-primary-600 text-white border-primary-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              90 Days
+            </button>
+          </div>
+          
+          {/* Custom Duration Input */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Or enter custom duration (days):
+            </label>
+            <input
+              type="number"
+              value={form.timeHorizonDays}
+              onChange={(e) => setForm({ timeHorizonDays: parseInt(e.target.value) || 30 })}
+              min="1"
+              max="365"
+              className="input w-full"
+              placeholder="30"
+            />
+          </div>
+        </div>
+        <div className="text-xs text-gray-500 mt-2">
+          Fees will be calculated for this time period
+        </div>
+      </div>
+
       {/* Analysis Parameters (Collapsible) */}
       <details className="card">
         <summary className="cursor-pointer text-sm font-medium text-gray-700 mb-4">
