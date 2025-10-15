@@ -28,9 +28,12 @@ const FeeCalculatorPanel: React.FC = () => {
             }
           }
           
-          // Extract APR from summary if available
-          if (data.summary && data.summary.apr && data.summary.apr.estimated_apr) {
-            setCurrentAPR(data.summary.apr.estimated_apr);
+          // Extract APR from summary if available (use current_apr which is SaucerSwap's official APR)
+          if (data.summary && data.summary.apr) {
+            const aprValue = data.summary.apr.current_apr;
+            if (typeof aprValue === 'number' && !isNaN(aprValue)) {
+              setCurrentAPR(aprValue);
+            }
           }
         })
         .catch(err => console.error('Failed to fetch current price:', err));
