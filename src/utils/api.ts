@@ -97,10 +97,11 @@ export const apiClient = {
     timeframe: string = '1H',
     lookbackDays: number = 30
   ): Promise<{ candles: OHLCVCandle[] }> {
-    const response = await api.get<{ candles: OHLCVCandle[] }>(
+    const response = await api.get<{ ohlcv: any[] }>(
       `/ohlcv?pool_id=${encodeURIComponent(poolId)}&timeframe=${timeframe}&lookback_days=${lookbackDays}`
     );
-    return response.data;
+    // Backend returns { ohlcv: [...] }, transform to { candles: [...] }
+    return { candles: response.data.ohlcv || [] };
   },
 
   // Advanced LP Strategy Analysis

@@ -31,8 +31,11 @@ const FeeCalculatorPanel: React.FC = () => {
         .catch(err => console.error('Failed to fetch current price:', err));
       
       // Get APR from pool data if available
-      if (selectedPool.apr) {
+      // Note: APR calculation from backend is coming soon
+      if (selectedPool.apr !== undefined && selectedPool.apr !== null) {
         setCurrentAPR(selectedPool.apr);
+      } else {
+        setCurrentAPR(null);
       }
     }
   }, [selectedPool]);
