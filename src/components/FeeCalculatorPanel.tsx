@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calculator, Plus, Minus, AlertCircle, Info, BarChart3, RefreshCw } from 'lucide-react';
 import { useLPStrategyStore } from '../store/lpStrategyStore';
 import { apiClient } from '../utils/api';
+import LiquidityDepthChart from './LiquidityDepthChart';
 
 const FeeCalculatorPanel: React.FC = () => {
   const { form, setForm, selectedPool, setResults, setLoading, setError } = useLPStrategyStore();
@@ -177,6 +178,21 @@ const FeeCalculatorPanel: React.FC = () => {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Liquidity Depth Chart */}
+      {selectedPool && (
+        <div className="card">
+          <LiquidityDepthChart
+            poolId={selectedPool.id}
+            currentPrice={currentPrice}
+            selectedRange={{
+              min: isPriceInverted ? (1 / form.priceUpper) : form.priceLower,
+              max: isPriceInverted ? (1 / form.priceLower) : form.priceUpper,
+            }}
+            isPriceInverted={isPriceInverted}
+          />
         </div>
       )}
 

@@ -148,6 +148,14 @@ export const apiClient = {
     return response.data;
   },
 
+  // Liquidity Distribution for depth chart
+  async getLiquidityDistribution(poolId: string, pricePoints: number = 100): Promise<any> {
+    const response = await api.get(
+      `/liquidity-distribution?pool_id=${encodeURIComponent(poolId)}&price_points=${pricePoints}`
+    );
+    return response.data;
+  },
+
   // Test endpoints for debugging
   async testPool(poolId: string) {
     const response = await api.get(`/test-any-pool?pool_id=${encodeURIComponent(poolId)}&lookback_days=7`);

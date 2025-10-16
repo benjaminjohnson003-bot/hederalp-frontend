@@ -19,6 +19,8 @@
     "chart.js": "^4.4.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-chart-financial": "^0.2.1",
+    "chartjs-plugin-zoom": "^2.0.1",
+    "chartjs-plugin-annotation": "^3.0.1",
     "clsx": "^2.0.0",
     "cross-env": "^10.0.0",
     "date-fns": "^2.30.0",
