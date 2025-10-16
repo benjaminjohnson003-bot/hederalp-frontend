@@ -144,12 +144,12 @@ const LiquidityDepthChart: React.FC<LiquidityDepthChartProps> = ({
         displayColors: false,
         callbacks: {
           title: (items: TooltipItem<'line'>[]) => {
-            const price = items[0].parsed.x;
-            return `Price: ${price.toFixed(6)}`;
+            const price = items[0]?.parsed?.x;
+            return price !== null && price !== undefined ? `Price: ${price.toFixed(6)}` : 'Price: N/A';
           },
           label: (item: TooltipItem<'line'>) => {
-            const value = item.parsed.y;
-            return `Volume: $${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+            const value = item?.parsed?.y;
+            return value !== null && value !== undefined ? `Volume: $${value.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : 'Volume: N/A';
           },
         },
       },
