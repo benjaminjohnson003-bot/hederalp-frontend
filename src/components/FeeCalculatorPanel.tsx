@@ -191,7 +191,6 @@ const FeeCalculatorPanel: React.FC = () => {
               min: isPriceInverted ? (1 / form.priceUpper) : form.priceLower,
               max: isPriceInverted ? (1 / form.priceLower) : form.priceUpper,
             }}
-            isPriceInverted={isPriceInverted}
           />
         </div>
       )}
