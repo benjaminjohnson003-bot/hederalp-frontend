@@ -16,7 +16,6 @@ interface LiquidityDepthChartProps {
     min: number;
     max: number;
   };
-  onRangeChange?: (min: number, max: number) => void;
   isPriceInverted?: boolean;
 }
 
@@ -24,7 +23,6 @@ const LiquidityDepthChart: React.FC<LiquidityDepthChartProps> = ({
   poolId,
   currentPrice,
   selectedRange,
-  onRangeChange,
   isPriceInverted = false,
 }) => {
   const chartRef = useRef<ChartJS<'line'>>(null);
