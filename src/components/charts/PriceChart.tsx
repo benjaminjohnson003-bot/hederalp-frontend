@@ -41,7 +41,7 @@ const PriceChart: React.FC<PriceChartProps> = ({
       {
         label: 'Price',
         data: candles.map(candle => ({
-          x: new Date(candle.timestamp).getTime(),
+          x: candle.timestamp * 1000, // Convert Unix seconds to milliseconds
           y: candle.close,
         })),
         borderColor: chartColors.primary,
@@ -61,12 +61,12 @@ const PriceChart: React.FC<PriceChartProps> = ({
   // Add range overlay if enabled
   if (showRangeOverlay && form.priceLower && form.priceUpper) {
     const rangeData = candles.map(candle => ({
-      x: new Date(candle.timestamp).getTime(),
+      x: candle.timestamp * 1000, // Convert Unix seconds to milliseconds
       y: form.priceLower,
     }));
     
     const upperRangeData = candles.map(candle => ({
-      x: new Date(candle.timestamp).getTime(),
+      x: candle.timestamp * 1000, // Convert Unix seconds to milliseconds
       y: form.priceUpper,
     }));
 
