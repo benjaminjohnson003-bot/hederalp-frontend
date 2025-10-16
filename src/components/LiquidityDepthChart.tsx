@@ -94,11 +94,6 @@ const LiquidityDepthChart: React.FC<LiquidityDepthChartProps> = ({
   const prices = distribution.map((d: any) => d.price);
   const liquidity = distribution.map((d: any) => d.liquidity);
 
-  // Find current price index
-  const currentPriceIndex = currentPrice
-    ? distribution.findIndex((d: any) => Math.abs(d.price - currentPrice) < 0.01)
-    : -1;
-
   // Find selected range indices
   const minRangeIndex = selectedRange?.min
     ? distribution.findIndex((d: any) => d.price >= selectedRange.min)
