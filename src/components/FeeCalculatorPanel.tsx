@@ -195,77 +195,39 @@ const FeeCalculatorPanel: React.FC = () => {
         </div>
       )}
 
-      {/* Visual Price Range Selector */}
+      {/* Price Range Configuration */}
       <div className="card">
         <h3 className="text-lg font-semibold mb-4 flex items-center">
           <BarChart3 className="w-5 h-5 mr-2 text-primary-600" />
           Set Price Range
         </h3>
 
-        {/* Visual Range Display */}
-        <div className="mb-6 bg-gray-50 rounded-lg p-4">
-          <div className="relative h-32 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-100 rounded-lg overflow-hidden">
-            {/* Current Price Indicator */}
-            {currentPrice > 0 && isInRange && (
-              <div
-                className="absolute top-0 bottom-0 w-1 bg-green-500 z-10"
-                style={{ left: `${Math.max(0, Math.min(100, pricePosition))}%` }}
-              >
-                <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                  Current: {typeof currentPrice === 'number' && !isNaN(currentPrice) ? currentPrice.toFixed(4) : 'N/A'}
-                </div>
-              </div>
-            )}
-            
-            {/* Range Boundaries */}
-            <div className="absolute top-0 bottom-0 left-0 w-1 bg-purple-500">
-              <div className="absolute -top-6 left-0 bg-purple-500 text-white text-xs px-2 py-1 rounded">
-                Min
-              </div>
-            </div>
-            <div className="absolute top-0 bottom-0 right-0 w-1 bg-cyan-500">
-              <div className="absolute -top-6 right-0 bg-cyan-500 text-white text-xs px-2 py-1 rounded">
-                Max
-              </div>
-            </div>
-
-            {/* Range Info */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white/90 px-4 py-2 rounded-lg shadow-sm">
-                <div className="text-sm font-medium text-gray-900">
-                  Range Width: ±{typeof rangeWidth === 'number' && !isNaN(rangeWidth) ? (rangeWidth / 2).toFixed(1) : '0'}%
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Preset Buttons */}
-          <div className="mt-4 flex gap-2">
-            <button
-              onClick={() => setRangePreset(5)}
-              className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              ±5%
-            </button>
-            <button
-              onClick={() => setRangePreset(10)}
-              className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              ±10%
-            </button>
-            <button
-              onClick={() => setRangePreset(20)}
-              className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              ±20%
-            </button>
-            <button
-              onClick={() => setRangePreset(30)}
-              className="flex-1 px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              ±30%
-            </button>
-          </div>
+        {/* Quick Preset Buttons */}
+        <div className="mb-6 flex gap-2">
+          <button
+            onClick={() => setRangePreset(5)}
+            className="flex-1 px-4 py-3 text-sm font-medium bg-white border-2 border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-all"
+          >
+            ±5%
+          </button>
+          <button
+            onClick={() => setRangePreset(10)}
+            className="flex-1 px-4 py-3 text-sm font-medium bg-white border-2 border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-all"
+          >
+            ±10%
+          </button>
+          <button
+            onClick={() => setRangePreset(20)}
+            className="flex-1 px-4 py-3 text-sm font-medium bg-white border-2 border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-all"
+          >
+            ±20%
+          </button>
+          <button
+            onClick={() => setRangePreset(30)}
+            className="flex-1 px-4 py-3 text-sm font-medium bg-white border-2 border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-all"
+          >
+            ±30%
+          </button>
         </div>
 
         {/* Price Range Inputs */}
