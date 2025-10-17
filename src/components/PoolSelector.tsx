@@ -62,14 +62,24 @@ const PoolSelector: React.FC = () => {
     `${pool.token0_symbol}/${pool.token1_symbol}`.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Validate pool when form.poolId changes
+  // Validate pool when form.poolId changes (but only if manually typed)
   useEffect(() => {
-    if (form.poolId && form.poolId.length > 5) {
+    // Skip validation if this pool is already in our known/fetched pools
+    const knownPool = availablePools.find(p => p.id === form.poolId);
+    if (knownPool) {
+      // It's a known pool, mark as valid immediately
+      setValidationResult({ valid: true, pool_id: knownPool.id, pool_info: knownPool });
+      setSelectedPool(knownPool);
+      return;
+    }
+    
+    // Only validate manually entered pool IDs
+    if (form.poolId && form.poolId.length > 5 && searchQuery === form.poolId) {
       validatePool(form.poolId);
-    } else {
+    } else if (!form.poolId) {
       setValidationResult(null);
     }
-  }, [form.poolId]);
+  }, [form.poolId, availablePools, searchQuery]);
 
   const validatePool = async (poolId: string) => {
     try {
@@ -122,6 +132,9 @@ const PoolSelector: React.FC = () => {
   };
 
   const getValidationIcon = () => {
+    if (poolsLoading) {
+      return <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />;
+    }
     if (isValidating) {
       return <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />;
     }
