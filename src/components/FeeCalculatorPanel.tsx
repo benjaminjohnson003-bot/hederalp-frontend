@@ -114,6 +114,9 @@ const FeeCalculatorPanel: React.FC = () => {
     }
   };
 
+  // Check if current price is in range
+  const isInRange = currentPrice >= form.priceLower && currentPrice <= form.priceUpper;
+
   // Quick preset buttons
   const setRangePreset = (percentage: number) => {
     if (currentPrice > 0) {
