@@ -74,6 +74,20 @@ export const apiClient = {
     return pools as Pool[];
   },
 
+  async getAllPools(limit: number = 50, sortBy: 'tvl' | 'volume' | 'apr' = 'tvl'): Promise<Pool[]> {
+    const response = await api.get<{pools: any[]}>(`/pools/all?limit=${limit}&sort_by=${sortBy}`);
+    return response.data.pools.map((pool: any) => ({
+      id: pool.pool_id,
+      name: pool.pair_name || `${pool.token0_symbol}/${pool.token1_symbol}`,
+      token0_symbol: pool.token0_symbol,
+      token1_symbol: pool.token1_symbol,
+      fee_tier: pool.fee_tier,
+      tvl_usd: pool.tvl_usd,
+      volume_24h_usd: pool.volume_24h_usd,
+      apr: pool.apr,
+    })) as Pool[];
+  },
+
   async validatePool(poolId: string): Promise<PoolValidation> {
     const response = await api.get<{
       pool_id: string;

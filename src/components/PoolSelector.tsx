@@ -12,10 +12,10 @@ const PoolSelector: React.FC = () => {
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<PoolValidation | null>(null);
 
-  // Fetch available pools
+  // Fetch all available pools from SaucerSwap (top 50 by TVL)
   const { data, isLoading: poolsLoading } = useQuery<Pool[]>({
-    queryKey: ['pools'],
-    queryFn: apiClient.getPools,
+    queryKey: ['all-pools'],
+    queryFn: () => apiClient.getAllPools(50, 'tvl'),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -181,34 +181,44 @@ const PoolSelector: React.FC = () => {
       {/* Pool Suggestions Dropdown */}
       {showDropdown && filteredPools.length > 0 && (
         <div className="relative">
-          <div className="absolute top-0 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+          <div className="absolute top-0 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-96 overflow-y-auto">
             <div className="p-2">
-              <div className="text-xs font-medium text-gray-500 mb-2">
-                {filteredPools.length} pool{filteredPools.length !== 1 ? 's' : ''} found
+              <div className="flex items-center justify-between text-xs font-medium text-gray-500 mb-2 px-2">
+                <span>{filteredPools.length} pool{filteredPools.length !== 1 ? 's' : ''} found (sorted by TVL)</span>
+                {filteredPools.length > 10 && (
+                  <span className="text-primary-600">Showing top 10</span>
+                )}
               </div>
               {filteredPools.slice(0, 10).map((pool) => (
                 <button
                   key={pool.id}
                   onClick={() => handlePoolSelect(pool)}
-                  className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors duration-150 group"
+                  className="w-full text-left p-3 hover:bg-primary-50 rounded-lg transition-colors duration-150 border border-transparent hover:border-primary-200"
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium text-gray-900">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-gray-900 mb-1">
                         {pool.token0_symbol}/{pool.token1_symbol}
+                        <span className="ml-2 text-xs font-normal text-gray-500">
+                          {pool.fee_tier}
+                        </span>
                       </div>
-                      <div className="text-sm text-gray-500">{pool.id}</div>
-                      <div className="text-xs text-gray-400">
-                        Fee: {pool.fee_tier}
-                      </div>
+                      <div className="text-xs text-gray-500 truncate">{pool.id}</div>
                     </div>
-                    <div className="text-right text-sm text-gray-600">
-                      {pool.tvl_usd && (
-                        <div>TVL: {formatCurrency(pool.tvl_usd, 0)}</div>
+                    <div className="text-right flex-shrink-0">
+                      {pool.tvl_usd !== undefined && (
+                        <div className="text-sm font-medium text-gray-900">
+                          {formatCurrency(pool.tvl_usd, 0)}
+                        </div>
                       )}
-                      {pool.apr && (
-                        <div className="text-xs text-success-600">
-                          APR: {formatPercentage(pool.apr)}
+                      {pool.volume_24h_usd !== undefined && (
+                        <div className="text-xs text-gray-600">
+                          Vol: {formatCurrency(pool.volume_24h_usd, 0)}
+                        </div>
+                      )}
+                      {pool.apr !== undefined && pool.apr > 0 && (
+                        <div className="text-xs font-medium text-success-600">
+                          {formatPercentage(pool.apr)} APR
                         </div>
                       )}
                     </div>
