@@ -16,12 +16,14 @@ interface LiquidityDepthChartProps {
     min: number;
     max: number;
   };
+  isPriceInverted?: boolean;
 }
 
 const LiquidityDepthChart: React.FC<LiquidityDepthChartProps> = ({
   poolId,
   currentPrice,
   selectedRange,
+  isPriceInverted = false,
 }) => {
   const chartRef = useRef<ChartJS<'line'>>(null);
   const [distributionData, setDistributionData] = useState<any>(null);
@@ -91,8 +93,17 @@ const LiquidityDepthChart: React.FC<LiquidityDepthChartProps> = ({
 
   // Prepare chart data
   const distribution = distributionData.distribution || [];
-  const prices = distribution.map((d: any) => d.price);
-  const liquidity = distribution.map((d: any) => d.liquidity);
+  
+  // Invert prices if needed (e.g., DOVU/HBAR -> HBAR/DOVU)
+  const processedData = isPriceInverted 
+    ? distribution.map((d: any) => ({
+        price: d.price > 0 ? 1 / d.price : 0,
+        liquidity: d.liquidity
+      })).reverse() // Reverse order when inverted
+    : distribution;
+  
+  const prices = processedData.map((d: any) => d.price);
+  const liquidity = processedData.map((d: any) => d.liquidity);
 
   const chartData = {
     labels: prices,
