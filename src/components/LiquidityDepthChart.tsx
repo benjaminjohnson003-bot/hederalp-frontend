@@ -75,7 +75,7 @@ const LiquidityDepthChart: React.FC<LiquidityDepthChartProps> = ({
       <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
         <div className="text-center">
           <Loader2 className="w-8 h-8 text-primary-600 animate-spin mx-auto mb-2" />
-          <p className="text-sm text-gray-600">Loading liquidity depth chart...</p>
+          <p className="text-sm text-gray-600">Loading trading volume data...</p>
         </div>
       </div>
     );
@@ -98,7 +98,7 @@ const LiquidityDepthChart: React.FC<LiquidityDepthChartProps> = ({
     labels: prices,
     datasets: [
       {
-        label: 'Liquidity Depth',
+        label: 'Trading Volume',
         data: liquidity,
         fill: true,
         backgroundColor: (context: any) => {
@@ -290,8 +290,13 @@ const LiquidityDepthChart: React.FC<LiquidityDepthChartProps> = ({
     <div className="space-y-2">
       {/* Chart controls */}
       <div className="flex items-center justify-between">
-        <div className="text-sm font-medium text-gray-700">
-          Liquidity Depth Chart
+        <div>
+          <div className="text-sm font-medium text-gray-900">
+            Trading Volume by Price
+          </div>
+          <div className="text-xs text-gray-500">
+            Higher bars = more fees earned at those prices
+          </div>
         </div>
         <div className="flex items-center space-x-2">
           <button
@@ -350,8 +355,13 @@ const LiquidityDepthChart: React.FC<LiquidityDepthChartProps> = ({
       </div>
 
       {/* Help text */}
-      <div className="text-xs text-gray-500 text-center">
-        💡 Scroll to zoom, drag to pan. Higher bars = more trading activity at that price.
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-gray-700">
+        <div className="font-medium text-blue-900 mb-1">💡 How to use this chart:</div>
+        <ul className="space-y-1 ml-4 list-disc">
+          <li><strong>Higher bars</strong> = more trading volume = more fees you'll earn</li>
+          <li><strong>Place your range</strong> where volume is highest for maximum fee earnings</li>
+          <li><strong>Scroll to zoom</strong>, drag to pan, or use the buttons above</li>
+        </ul>
       </div>
     </div>
   );
