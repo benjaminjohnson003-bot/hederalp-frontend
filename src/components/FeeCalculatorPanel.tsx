@@ -114,10 +114,6 @@ const FeeCalculatorPanel: React.FC = () => {
     }
   };
 
-  const rangeWidth = currentPrice > 0 ? ((form.priceUpper - form.priceLower) / currentPrice) * 100 : 0;
-  const pricePosition = currentPrice > 0 ? ((currentPrice - form.priceLower) / (form.priceUpper - form.priceLower)) * 100 : 50;
-  const isInRange = currentPrice >= form.priceLower && currentPrice <= form.priceUpper;
-
   // Quick preset buttons
   const setRangePreset = (percentage: number) => {
     if (currentPrice > 0) {
