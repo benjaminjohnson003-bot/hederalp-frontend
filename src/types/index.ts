@@ -27,12 +27,17 @@ export interface HealthStatus {
 }
 
 export interface OHLCVCandle {
-  timestamp: string;
+  timestamp: number; // Unix timestamp in seconds
+  datetime?: string; // Optional ISO datetime string
   open: number;
   high: number;
   low: number;
   close: number;
   volume_usd: number;
+  volume_token0?: number;
+  volume_token1?: number;
+  trade_count?: number;
+  timeframe?: string;
 }
 
 export interface ScenarioAnalysis {
