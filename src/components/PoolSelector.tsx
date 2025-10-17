@@ -12,19 +12,49 @@ const PoolSelector: React.FC = () => {
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<PoolValidation | null>(null);
 
+  // Fetch known pools (fallback/priority pools)
+  const { data: knownPools } = useQuery<Pool[]>({
+    queryKey: ['known-pools'],
+    queryFn: apiClient.getPools,
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Fetch all available pools from SaucerSwap (top 50 by TVL)
-  const { data, isLoading: poolsLoading } = useQuery<Pool[]>({
+  const { data: allPools, isLoading: poolsLoading } = useQuery<Pool[]>({
     queryKey: ['all-pools'],
     queryFn: () => apiClient.getAllPools(50, 'tvl'),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Update available pools when data changes
+  // Combine and deduplicate pools (prioritize known pools, then add others)
   React.useEffect(() => {
-    if (data) {
-      setAvailablePools(data);
+    const combined: Pool[] = [];
+    const seenIds = new Set<string>();
+
+    // Add known pools first (these are verified and should always be available)
+    if (knownPools) {
+      knownPools.forEach(pool => {
+        if (pool.id && !seenIds.has(pool.id)) {
+          combined.push(pool);
+          seenIds.add(pool.id);
+        }
+      });
     }
-  }, [data, setAvailablePools]);
+
+    // Add pools from SaucerSwap API
+    if (allPools) {
+      allPools.forEach(pool => {
+        if (pool.id && !seenIds.has(pool.id)) {
+          combined.push(pool);
+          seenIds.add(pool.id);
+        }
+      });
+    }
+
+    if (combined.length > 0) {
+      setAvailablePools(combined);
+    }
+  }, [knownPools, allPools, setAvailablePools]);
 
   // Filter pools based on search query
   const filteredPools = availablePools.filter((pool) =>
