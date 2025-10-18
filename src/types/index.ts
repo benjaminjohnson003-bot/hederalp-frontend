@@ -130,6 +130,12 @@ export interface AdvancedLPAnalysis {
     average_daily_volume_usd: number;
     fee_rate_percent: number;
     data_points_analyzed: number;
+    pool_apr?: {
+      saucerswap_pool_apr?: number;
+      estimated_position_apr: number;
+      concentration_multiplier: number;
+      note: string;
+    };
   };
   monte_carlo_simulation?: MonteCarloResults;
   backtesting?: BacktestResults;
