@@ -123,6 +123,9 @@ const ScenarioAnalysisTab: React.FC<ScenarioAnalysisTabProps> = ({ data }) => {
         ))}
       </div>
 
+      {/* Position Performance Charts */}
+      <FeeCharts scenarios={scenarios} />
+
       {/* Summary Statistics */}
       <div className="card">
         <h3 className="text-lg font-semibold mb-4">Expected Outcomes</h3>
@@ -229,9 +232,6 @@ const ScenarioAnalysisTab: React.FC<ScenarioAnalysisTabProps> = ({ data }) => {
           </table>
         </div>
       </div>
-
-      {/* Interactive Charts */}
-      <FeeCharts scenarios={scenarios} />
 
       {/* Key Insights */}
       <div className="card bg-blue-50 border-blue-200">
