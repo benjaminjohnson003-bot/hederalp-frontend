@@ -105,6 +105,11 @@ const LiquidityDepthChart: React.FC<LiquidityDepthChartProps> = ({
   const prices = processedData.map((d: any) => d.price);
   const liquidity = processedData.map((d: any) => d.liquidity);
 
+  // Invert current price if needed
+  const displayCurrentPrice = currentPrice && isPriceInverted && currentPrice > 0
+    ? 1 / currentPrice
+    : currentPrice;
+
   const chartData = {
     labels: prices,
     datasets: [
@@ -189,11 +194,11 @@ const LiquidityDepthChart: React.FC<LiquidityDepthChartProps> = ({
       annotation: {
         annotations: {
           // Current price line
-          ...(currentPrice && {
+          ...(displayCurrentPrice && {
             currentPriceLine: {
               type: 'line',
-              xMin: currentPrice,
-              xMax: currentPrice,
+              xMin: displayCurrentPrice,
+              xMax: displayCurrentPrice,
               borderColor: 'rgb(34, 197, 94)',
               borderWidth: 2,
               borderDash: [5, 5],
