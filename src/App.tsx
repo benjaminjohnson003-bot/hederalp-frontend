@@ -125,6 +125,28 @@ function App() {
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Disclaimer */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+            <h3 className="text-sm font-bold text-yellow-900 mb-2">⚠️ DISCLAIMER - NOT FINANCIAL ADVICE</h3>
+            <div className="text-xs text-yellow-800 space-y-2">
+              <p>
+                <strong>This tool is for informational and educational purposes only.</strong> It does NOT constitute financial, investment, trading, or any other type of advice. You should not treat any of the information, analysis, or projections as a recommendation to buy, sell, or hold any cryptocurrency, token, or liquidity position.
+              </p>
+              <p>
+                <strong>Past performance does not indicate future results.</strong> Historical data, backtests, and simulations are based on past market conditions and do not guarantee future outcomes. Cryptocurrency markets are highly volatile and unpredictable.
+              </p>
+              <p>
+                <strong>You are solely responsible for your own investment decisions.</strong> Always conduct your own research (DYOR) and consult with a qualified financial advisor before making any investment decisions. The creators and operators of this tool assume no liability for any losses or damages resulting from your use of this information.
+              </p>
+              <p>
+                <strong>Risk Warning:</strong> Providing liquidity to decentralized exchanges involves significant risks including impermanent loss, smart contract risk, and total loss of capital. Only invest what you can afford to lose.
+              </p>
+              <p className="text-yellow-900 font-semibold mt-3">
+                By using this tool, you acknowledge that you understand these risks and agree to use this information at your own risk.
+              </p>
+            </div>
+          </div>
+
           <div className="text-center text-gray-600">
             <p className="mb-2">
               Built with ❤️ for the SaucerSwap V2 community
