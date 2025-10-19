@@ -1,5 +1,6 @@
 // import React from 'react';
 import { TrendingUp, BarChart3, Settings, Activity } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import { useLPStrategyStore } from './store/lpStrategyStore';
 import HealthStatusIndicator from './components/HealthStatusIndicator';
 import PoolSelector from './components/PoolSelector';
@@ -160,6 +161,9 @@ function App() {
 
       {/* Performance Dashboard */}
       <PerformanceDashboard />
+      
+      {/* Vercel Analytics */}
+      <Analytics />
     </div>
   );
 }
