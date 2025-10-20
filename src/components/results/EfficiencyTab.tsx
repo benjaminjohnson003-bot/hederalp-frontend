@@ -121,7 +121,7 @@ const EfficiencyTab: React.FC<EfficiencyTabProps> = ({ data }) => {
         </div>
         
         <div className={`inline-flex items-center px-6 py-3 rounded-full text-3xl font-bold ${getEfficiencyColor(efficiency.capital_efficiency_score)}`}>
-          {efficiency.capital_efficiency_score.toFixed(1)}
+          {typeof efficiency.capital_efficiency_score === 'number' ? efficiency.capital_efficiency_score.toFixed(1) : '0.0'}
         </div>
         
         <div className="mt-4 text-sm text-gray-600 max-w-md mx-auto">
@@ -190,7 +190,7 @@ const EfficiencyTab: React.FC<EfficiencyTabProps> = ({ data }) => {
                 <ul className="space-y-1 text-current opacity-80">
                   <li>• Width: {formatPercentage(efficiency.range_width_percent)} of current price</li>
                   <li>• Historical utilization: {formatPercentage(efficiency.utilization_rate_percent)}</li>
-                  <li>• Efficiency score: {efficiency.capital_efficiency_score.toFixed(1)}/100</li>
+                  <li>• Efficiency score: {typeof efficiency.capital_efficiency_score === 'number' ? efficiency.capital_efficiency_score.toFixed(1) : '0.0'}/100</li>
                 </ul>
               </div>
               

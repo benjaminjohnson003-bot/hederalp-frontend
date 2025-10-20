@@ -46,7 +46,7 @@ const ScenarioAnalysisTab: React.FC<ScenarioAnalysisTabProps> = ({ data }) => {
               {/* Price & Range Status */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Final Price</span>
-                <span className="font-medium">${scenario.final_price.toFixed(6)}</span>
+                <span className="font-medium">${typeof scenario.final_price === 'number' ? scenario.final_price.toFixed(6) : '0.000000'}</span>
               </div>
               
               <div className="flex items-center justify-between">
@@ -200,7 +200,7 @@ const ScenarioAnalysisTab: React.FC<ScenarioAnalysisTabProps> = ({ data }) => {
                     </div>
                   </td>
                   <td className="text-right py-3 px-2 font-mono">
-                    ${scenario.final_price.toFixed(6)}
+                    ${typeof scenario.final_price === 'number' ? scenario.final_price.toFixed(6) : '0.000000'}
                   </td>
                   <td className="text-right py-3 px-2">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
