@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calculator, Plus, Minus, AlertCircle, Info, BarChart3, RefreshCw } from 'lucide-react';
 import { useLPStrategyStore } from '../store/lpStrategyStore';
-import { apiClient } from '../utils/api';
+import { apiClient, safeToFixed } from '../utils/api';
 import LiquidityDepthChart from './LiquidityDepthChart';
 
 const FeeCalculatorPanel: React.FC = () => {
@@ -154,7 +154,7 @@ const FeeCalculatorPanel: React.FC = () => {
                 </button>
               </div>
               <div className="text-3xl font-bold text-gray-900">
-                {currentPrice > 0 ? Number(getDisplayPrice(currentPrice)).toFixed(6) : '...'}{' '}
+                {currentPrice > 0 ? safeToFixed(Number(getDisplayPrice(currentPrice)), 6) : '...'}{' '}
                 <span className="text-lg text-gray-600">
                   {tokenLabels.base} per {tokenLabels.quote}
                 </span>
@@ -177,7 +177,7 @@ const FeeCalculatorPanel: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">Current APR</div>
                 <div className="text-2xl font-bold text-green-600">
-                  {currentAPR.toFixed(2)}%
+                  {safeToFixed(currentAPR, 2)}%
                 </div>
               </div>
               <div className="text-xs text-gray-500 mt-1">
@@ -248,7 +248,7 @@ const FeeCalculatorPanel: React.FC = () => {
             <div className="relative">
               <input
                 type="number"
-                value={isPriceInverted ? (1 / form.priceUpper).toFixed(6) : form.priceLower.toFixed(6)}
+                value={isPriceInverted ? safeToFixed(1 / form.priceUpper, 6) : safeToFixed(form.priceLower, 6)}
                 onChange={(e) => {
                   const displayValue = parseFloat(e.target.value) || 0;
                   if (isPriceInverted) {
@@ -303,7 +303,7 @@ const FeeCalculatorPanel: React.FC = () => {
             <div className="relative">
               <input
                 type="number"
-                value={isPriceInverted ? (1 / form.priceLower).toFixed(6) : form.priceUpper.toFixed(6)}
+                value={isPriceInverted ? safeToFixed(1 / form.priceLower, 6) : safeToFixed(form.priceUpper, 6)}
                 onChange={(e) => {
                   const displayValue = parseFloat(e.target.value) || 0;
                   if (isPriceInverted) {
@@ -356,7 +356,7 @@ const FeeCalculatorPanel: React.FC = () => {
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 flex items-start space-x-2">
             <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-yellow-800">
-              <strong>Warning:</strong> Current price ({typeof currentPrice === 'number' && !isNaN(currentPrice) ? getDisplayPrice(currentPrice).toFixed(6) : 'N/A'} {tokenLabels.base} per {tokenLabels.quote}) is outside your selected range. 
+              <strong>Warning:</strong> Current price ({typeof currentPrice === 'number' && !isNaN(currentPrice) ? safeToFixed(getDisplayPrice(currentPrice), 6) : 'N/A'} {tokenLabels.base} per {tokenLabels.quote}) is outside your selected range. 
               Your position will not earn fees until the price moves into range.
             </div>
           </div>
