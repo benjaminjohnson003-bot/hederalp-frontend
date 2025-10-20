@@ -96,7 +96,7 @@ const PoolSelector: React.FC = () => {
               key={pool.id}
               onClick={() => handlePoolSelect(pool)}
               className={`
-                relative p-4 rounded-lg border-2 transition-all duration-200 text-left
+                relative p-4 rounded-lg border-2 transition-all duration-200 text-left min-h-[160px] flex flex-col
                 ${isSelected 
                   ? 'border-primary-500 bg-primary-50 shadow-md ring-2 ring-primary-200' 
                   : 'border-gray-200 bg-white hover:border-primary-300 hover:shadow-sm'
@@ -111,16 +111,18 @@ const PoolSelector: React.FC = () => {
               )}
 
               {/* Pool Name */}
-              <div className="mb-3">
-                <div className="flex items-center space-x-2">
+              <div className="mb-3 pr-8">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h4 className={`text-lg font-bold ${isSelected ? 'text-primary-900' : 'text-gray-900'}`}>
                     {pool.token0_symbol}/{pool.token1_symbol}
                   </h4>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    isSelected ? 'bg-primary-200 text-primary-800' : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {pool.fee_tier}
-                  </span>
+                  {pool.fee_tier && (
+                    <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${
+                      isSelected ? 'bg-primary-200 text-primary-800' : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {pool.fee_tier}
+                    </span>
+                  )}
                 </div>
                 <div className="text-xs text-gray-500 mt-1 font-mono truncate">
                   {pool.id}
@@ -128,7 +130,7 @@ const PoolSelector: React.FC = () => {
               </div>
 
               {/* Pool Stats */}
-              <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="grid grid-cols-2 gap-3 text-sm mb-3">
                 {/* TVL */}
                 {pool.tvl_usd !== undefined && (
                   <div>
@@ -162,6 +164,9 @@ const PoolSelector: React.FC = () => {
                   </div>
                 )}
               </div>
+              
+              {/* Spacer to push link to bottom */}
+              <div className="flex-grow"></div>
 
               {/* View on Hashscan Link */}
               <a
