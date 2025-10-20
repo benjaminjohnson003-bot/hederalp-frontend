@@ -54,6 +54,14 @@ export const chartColors = {
   warningGradient: ['rgba(245, 158, 11, 0.8)', 'rgba(245, 158, 11, 0.2)'],
 };
 
+// Safe toFixed helper - used throughout chart callbacks
+const safeToFixed = (value: any, decimals: number): string => {
+  if (value === undefined || value === null || isNaN(value) || typeof value !== 'number') {
+    return '0.' + '0'.repeat(decimals);
+  }
+  return value.toFixed(decimals);
+};
+
 // Default chart options
 export const defaultChartOptions = {
   responsive: true,
@@ -162,7 +170,7 @@ export const candlestickOptions = {
         },
         color: '#6b7280',
         callback: function(value: any) {
-          return '$' + Number(value).toFixed(6);
+          return '$' + safeToFixed(Number(value), 6);
         },
       },
     },
@@ -179,10 +187,10 @@ export const candlestickOptions = {
         label: function(context: any) {
           const data = context.parsed;
           return [
-            `Open: $${data.o?.toFixed(6) || 'N/A'}`,
-            `High: $${data.h?.toFixed(6) || 'N/A'}`,
-            `Low: $${data.l?.toFixed(6) || 'N/A'}`,
-            `Close: $${data.c?.toFixed(6) || 'N/A'}`,
+            `Open: $${data.o !== undefined ? safeToFixed(data.o, 6) : 'N/A'}`,
+            `High: $${data.h !== undefined ? safeToFixed(data.h, 6) : 'N/A'}`,
+            `Low: $${data.l !== undefined ? safeToFixed(data.l, 6) : 'N/A'}`,
+            `Close: $${data.c !== undefined ? safeToFixed(data.c, 6) : 'N/A'}`,
           ];
         },
       },
@@ -200,19 +208,21 @@ export const createGradient = (ctx: CanvasRenderingContext2D, colors: string[]) 
 
 // Format currency for chart labels
 export const formatChartCurrency = (value: number, decimals: number = 2): string => {
+  if (value === undefined || value === null || isNaN(value) || typeof value !== 'number') return '$0';
   if (value === 0) return '$0';
   if (Math.abs(value) >= 1000000) {
-    return `$${(value / 1000000).toFixed(1)}M`;
+    return `$${safeToFixed(value / 1000000, 1)}M`;
   }
   if (Math.abs(value) >= 1000) {
-    return `$${(value / 1000).toFixed(1)}K`;
+    return `$${safeToFixed(value / 1000, 1)}K`;
   }
-  return `$${value.toFixed(decimals)}`;
+  return `$${safeToFixed(value, decimals)}`;
 };
 
 // Format percentage for chart labels
 export const formatChartPercentage = (value: number, decimals: number = 1): string => {
-  return `${value.toFixed(decimals)}%`;
+  if (value === undefined || value === null || isNaN(value) || typeof value !== 'number') return '0%';
+  return `${safeToFixed(value, decimals)}%`;
 };
 
 // Generate chart colors for multiple datasets
