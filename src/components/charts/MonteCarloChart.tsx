@@ -3,6 +3,7 @@ import { Bar, Line } from 'react-chartjs-2';
 import { BarChart3, TrendingUp, AlertTriangle, Target } from 'lucide-react';
 import { chartColors, defaultChartOptions, formatChartCurrency, formatChartPercentage } from '../../utils/chartConfig';
 import { MonteCarloResults } from '../../types';
+import { safeToFixed } from '../../utils/api';
 
 interface MonteCarloChartProps {
   data: MonteCarloResults;
@@ -153,7 +154,7 @@ const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data, className = '' 
         ticks: {
           ...defaultChartOptions.scales.y.ticks,
           callback: function(value: any) {
-            return '$' + Number(value).toFixed(6);
+            return '$' + safeToFixed(Number(value), 6);
           },
         },
       },
@@ -172,7 +173,7 @@ const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data, className = '' 
         ...defaultChartOptions.plugins.tooltip,
         callbacks: {
           label: function(context: any) {
-            return `${context.label}: $${context.parsed.y.toFixed(6)}`;
+            return `${context.label}: $${safeToFixed(context.parsed.y, 6)}`;
           },
         },
       },
@@ -222,7 +223,7 @@ const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data, className = '' 
           label: function(context: any) {
             const dataset = context.dataset;
             if (dataset.label === 'Return Distribution') {
-              return `Density: ${context.parsed.y.toFixed(1)}%`;
+              return `Density: ${safeToFixed(context.parsed.y, 1)}%`;
             } else {
               return `${dataset.label}: ${formatChartCurrency(context.parsed.x)}`;
             }
@@ -250,7 +251,7 @@ const MonteCarloChart: React.FC<MonteCarloChartProps> = ({ data, className = '' 
       tooltip: {
         callbacks: {
           label: function(context: any) {
-            return `${context.label}: ${context.parsed.toFixed(1)}%`;
+            return `${context.label}: ${safeToFixed(context.parsed, 1)}%`;
           },
         },
       },

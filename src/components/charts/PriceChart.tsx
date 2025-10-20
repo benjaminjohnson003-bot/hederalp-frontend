@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { useQuery } from '@tanstack/react-query';
 import { TrendingUp, Calendar, BarChart3, Loader2, AlertCircle } from 'lucide-react';
-import { apiClient } from '../../utils/api';
+import { apiClient, safeToFixed } from '../../utils/api';
 import { chartColors, candlestickOptions } from '../../utils/chartConfig';
 import { useLPStrategyStore } from '../../store/lpStrategyStore';
 // import { OHLCVCandle } from '../../types';
@@ -255,19 +255,19 @@ const PriceChart: React.FC<PriceChartProps> = ({
             <div>
               <div className="text-gray-600">Current Price</div>
               <div className="font-semibold">
-                ${typeof candles[candles.length - 1]?.close === 'number' ? candles[candles.length - 1]?.close.toFixed(6) : 'N/A'}
+                ${typeof candles[candles.length - 1]?.close === 'number' ? safeToFixed(candles[candles.length - 1]?.close, 6) : 'N/A'}
               </div>
             </div>
             <div>
               <div className="text-gray-600">24h High</div>
               <div className="font-semibold text-success-600">
-                ${(() => { const high = Math.max(...candles.map(c => c.high)); return typeof high === 'number' && !isNaN(high) ? high.toFixed(6) : 'N/A'; })()}
+                ${(() => { const high = Math.max(...candles.map(c => c.high)); return typeof high === 'number' && !isNaN(high) ? safeToFixed(high, 6) : 'N/A'; })()}
               </div>
             </div>
             <div>
               <div className="text-gray-600">24h Low</div>
               <div className="font-semibold text-danger-600">
-                ${(() => { const low = Math.min(...candles.map(c => c.low)); return typeof low === 'number' && !isNaN(low) ? low.toFixed(6) : 'N/A'; })()}
+                ${(() => { const low = Math.min(...candles.map(c => c.low)); return typeof low === 'number' && !isNaN(low) ? safeToFixed(low, 6) : 'N/A'; })()}
               </div>
             </div>
             <div>
@@ -276,11 +276,11 @@ const PriceChart: React.FC<PriceChartProps> = ({
                 {(() => {
                   const total = candles.reduce((sum, c) => sum + c.volume_usd, 0);
                   if (total >= 1000000) {
-                    return `$${(total / 1000000).toFixed(2)}M`;
+                    return `$${safeToFixed(total / 1000000, 2)}M`;
                   } else if (total >= 1000) {
-                    return `$${(total / 1000).toFixed(2)}K`;
+                    return `$${safeToFixed(total / 1000, 2)}K`;
                   } else {
-                    return `$${total.toFixed(2)}`;
+                    return `$${safeToFixed(total, 2)}`;
                   }
                 })()}
               </div>
