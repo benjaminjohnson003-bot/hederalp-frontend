@@ -120,13 +120,13 @@ const ResultsSection: React.FC = () => {
           <div>
             <div className="text-sm text-gray-600">Current Price</div>
             <div className="font-semibold text-gray-900">
-              ${results.strategy_analysis.current_price.toFixed(6)}
+              ${typeof results.strategy_analysis.current_price === 'number' ? results.strategy_analysis.current_price.toFixed(6) : '0.000000'}
             </div>
           </div>
           <div>
             <div className="text-sm text-gray-600">Range Width</div>
             <div className="font-semibold text-gray-900">
-              {results.strategy_analysis.selected_range.width_percent.toFixed(1)}%
+              {typeof results.strategy_analysis.selected_range.width_percent === 'number' ? results.strategy_analysis.selected_range.width_percent.toFixed(1) : '0.0'}%
             </div>
           </div>
           <div>
@@ -155,7 +155,7 @@ const ResultsSection: React.FC = () => {
           </div>
           <div>
             <span className="font-medium">Volatility:</span>{' '}
-            {results.market_context.historical_volatility_daily.toFixed(2)}% daily
+            {typeof results.market_context.historical_volatility_daily === 'number' ? results.market_context.historical_volatility_daily.toFixed(2) : '0.00'}% daily
           </div>
           <div>
             <span className="font-medium">Analyzed:</span>{' '}
