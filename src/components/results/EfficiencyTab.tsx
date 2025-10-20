@@ -1,7 +1,7 @@
 import React from 'react';
 import { Zap, Target, Clock, TrendingUp } from 'lucide-react';
 import { AdvancedLPAnalysis } from '../../types';
-import { formatPercentage } from '../../utils/api';
+import { formatPercentage, safeToFixed } from '../../utils/api';
 
 interface EfficiencyTabProps {
   data: AdvancedLPAnalysis;
@@ -86,9 +86,7 @@ const EfficiencyTab: React.FC<EfficiencyTabProps> = ({ data }) => {
             <div className="bg-white rounded-lg p-4 border border-green-100">
               <div className="text-sm text-gray-600 mb-1">Concentration Factor</div>
               <div className="text-3xl font-bold text-primary-600">
-                {typeof data.market_context.pool_apr.concentration_multiplier === 'number' 
-                  ? data.market_context.pool_apr.concentration_multiplier.toFixed(2) 
-                  : '0.00'}x
+                {safeToFixed(data.market_context.pool_apr.concentration_multiplier, 2)}x
               </div>
               <div className="text-xs text-gray-500 mt-1">
                 Liquidity concentration vs full range
@@ -121,7 +119,7 @@ const EfficiencyTab: React.FC<EfficiencyTabProps> = ({ data }) => {
         </div>
         
         <div className={`inline-flex items-center px-6 py-3 rounded-full text-3xl font-bold ${getEfficiencyColor(efficiency.capital_efficiency_score)}`}>
-          {typeof efficiency.capital_efficiency_score === 'number' ? efficiency.capital_efficiency_score.toFixed(1) : '0.0'}
+          {safeToFixed(efficiency.capital_efficiency_score, 1)}
         </div>
         
         <div className="mt-4 text-sm text-gray-600 max-w-md mx-auto">
@@ -190,7 +188,7 @@ const EfficiencyTab: React.FC<EfficiencyTabProps> = ({ data }) => {
                 <ul className="space-y-1 text-current opacity-80">
                   <li>• Width: {formatPercentage(efficiency.range_width_percent)} of current price</li>
                   <li>• Historical utilization: {formatPercentage(efficiency.utilization_rate_percent)}</li>
-                  <li>• Efficiency score: {typeof efficiency.capital_efficiency_score === 'number' ? efficiency.capital_efficiency_score.toFixed(1) : '0.0'}/100</li>
+                  <li>• Efficiency score: {safeToFixed(efficiency.capital_efficiency_score, 1)}/100</li>
                 </ul>
               </div>
               

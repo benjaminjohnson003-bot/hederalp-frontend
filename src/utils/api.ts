@@ -196,17 +196,28 @@ export const formatCurrency = (value: number | undefined, decimals: number = 2):
 };
 
 export const formatPercentage = (value: number | undefined, decimals: number = 2): string => {
-  if (value === undefined || value === null || isNaN(value)) {
+  if (value === undefined || value === null || isNaN(value) || typeof value !== 'number') {
     return '0.00%';
   }
   return `${value.toFixed(decimals)}%`;
 };
 
 export const formatNumber = (value: number, decimals: number = 2): string => {
+  if (value === undefined || value === null || isNaN(value) || typeof value !== 'number') {
+    return '0.' + '0'.repeat(decimals);
+  }
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(value);
+};
+
+// Safe toFixed that handles undefined/null/non-numbers
+export const safeToFixed = (value: any, decimals: number = 2): string => {
+  if (value === undefined || value === null || isNaN(value) || typeof value !== 'number') {
+    return '0.' + '0'.repeat(decimals);
+  }
+  return value.toFixed(decimals);
 };
 
 export const getRiskLevel = (value: number, thresholds: { low: number; medium: number }): 'low' | 'medium' | 'high' => {
