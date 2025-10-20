@@ -7,6 +7,7 @@ import BacktestTab from './results/BacktestTab';
 import EfficiencyTab from './results/EfficiencyTab';
 import PriceChart from './charts/PriceChart';
 import ExportPanel from './ExportPanel';
+import { safeToFixed } from '../utils/api';
 
 const ResultsSection: React.FC = () => {
   const { ui, results } = useLPStrategyStore();
@@ -120,13 +121,13 @@ const ResultsSection: React.FC = () => {
           <div>
             <div className="text-sm text-gray-600">Current Price</div>
             <div className="font-semibold text-gray-900">
-              ${typeof results.strategy_analysis.current_price === 'number' ? results.strategy_analysis.current_price.toFixed(6) : '0.000000'}
+              ${safeToFixed(results.strategy_analysis.current_price, 6)}
             </div>
           </div>
           <div>
             <div className="text-sm text-gray-600">Range Width</div>
             <div className="font-semibold text-gray-900">
-              {typeof results.strategy_analysis.selected_range.width_percent === 'number' ? results.strategy_analysis.selected_range.width_percent.toFixed(1) : '0.0'}%
+              {safeToFixed(results.strategy_analysis.selected_range.width_percent, 1)}%
             </div>
           </div>
           <div>
@@ -155,7 +156,7 @@ const ResultsSection: React.FC = () => {
           </div>
           <div>
             <span className="font-medium">Volatility:</span>{' '}
-            {typeof results.market_context.historical_volatility_daily === 'number' ? results.market_context.historical_volatility_daily.toFixed(2) : '0.00'}% daily
+            {safeToFixed(results.market_context.historical_volatility_daily, 2)}% daily
           </div>
           <div>
             <span className="font-medium">Analyzed:</span>{' '}

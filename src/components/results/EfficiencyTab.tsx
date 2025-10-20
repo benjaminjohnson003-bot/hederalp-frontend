@@ -135,7 +135,7 @@ const EfficiencyTab: React.FC<EfficiencyTabProps> = ({ data }) => {
           </div>
           <div className="text-sm text-gray-600">Range Width</div>
           <div className="text-xs text-gray-500 mt-1">
-            ${strategy.selected_range.lower.toFixed(6)} - ${strategy.selected_range.upper.toFixed(6)}
+            ${safeToFixed(strategy.selected_range.lower, 6)} - ${safeToFixed(strategy.selected_range.upper, 6)}
           </div>
         </div>
 

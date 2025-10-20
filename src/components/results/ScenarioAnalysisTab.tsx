@@ -1,7 +1,7 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus, DollarSign, AlertTriangle } from 'lucide-react';
 import { AdvancedLPAnalysis } from '../../types';
-import { formatCurrency, formatPercentage } from '../../utils/api';
+import { formatCurrency, formatPercentage, safeToFixed } from '../../utils/api';
 import FeeCharts from '../charts/FeeCharts';
 
 interface ScenarioAnalysisTabProps {
@@ -46,7 +46,7 @@ const ScenarioAnalysisTab: React.FC<ScenarioAnalysisTabProps> = ({ data }) => {
               {/* Price & Range Status */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Final Price</span>
-                <span className="font-medium">${typeof scenario.final_price === 'number' ? scenario.final_price.toFixed(6) : '0.000000'}</span>
+                <span className="font-medium">${safeToFixed(scenario.final_price, 6)}</span>
               </div>
               
               <div className="flex items-center justify-between">
@@ -200,7 +200,7 @@ const ScenarioAnalysisTab: React.FC<ScenarioAnalysisTabProps> = ({ data }) => {
                     </div>
                   </td>
                   <td className="text-right py-3 px-2 font-mono">
-                    ${typeof scenario.final_price === 'number' ? scenario.final_price.toFixed(6) : '0.000000'}
+                    ${safeToFixed(scenario.final_price, 6)}
                   </td>
                   <td className="text-right py-3 px-2">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${

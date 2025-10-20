@@ -1,7 +1,7 @@
 import React from 'react';
 import { Activity, TrendingUp, Calendar } from 'lucide-react';
 import { AdvancedLPAnalysis } from '../../types';
-import { formatCurrency, formatPercentage } from '../../utils/api';
+import { formatCurrency, formatPercentage, safeToFixed } from '../../utils/api';
 import BacktestChart from '../charts/BacktestChart';
 
 interface BacktestTabProps {
@@ -151,7 +151,7 @@ const BacktestTab: React.FC<BacktestTabProps> = ({ data }) => {
                       {new Date(period.period_start).toLocaleDateString()}
                     </td>
                     <td className="text-right py-3 px-2 font-mono text-xs">
-                      ${period.start_price.toFixed(6)} → ${period.end_price.toFixed(6)}
+                      ${safeToFixed(period.start_price, 6)} → ${safeToFixed(period.end_price, 6)}
                     </td>
                     <td className="text-right py-3 px-2">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BarChart3, AlertCircle } from 'lucide-react';
 import { AdvancedLPAnalysis } from '../../types';
-import { formatCurrency, formatPercentage } from '../../utils/api';
+import { formatCurrency, formatPercentage, safeToFixed } from '../../utils/api';
 import MonteCarloChart from '../charts/MonteCarloChart';
 
 interface MonteCarloTabProps {
@@ -104,31 +104,31 @@ const MonteCarloTab: React.FC<MonteCarloTabProps> = ({ data }) => {
           <div>
             <div className="text-sm text-gray-600">Minimum</div>
             <div className="font-mono font-medium">
-              ${mcData.price_distribution.min.toFixed(6)}
+              ${safeToFixed(mcData.price_distribution.min, 6)}
             </div>
           </div>
           <div>
             <div className="text-sm text-gray-600">10th %ile</div>
             <div className="font-mono font-medium">
-              ${mcData.price_distribution.percentile_10.toFixed(6)}
+              ${safeToFixed(mcData.price_distribution.percentile_10, 6)}
             </div>
           </div>
           <div>
             <div className="text-sm text-gray-600">Median</div>
             <div className="font-mono font-medium">
-              ${mcData.price_distribution.median.toFixed(6)}
+              ${safeToFixed(mcData.price_distribution.median, 6)}
             </div>
           </div>
           <div>
             <div className="text-sm text-gray-600">90th %ile</div>
             <div className="font-mono font-medium">
-              ${mcData.price_distribution.percentile_90.toFixed(6)}
+              ${safeToFixed(mcData.price_distribution.percentile_90, 6)}
             </div>
           </div>
           <div>
             <div className="text-sm text-gray-600">Maximum</div>
             <div className="font-mono font-medium">
-              ${mcData.price_distribution.max.toFixed(6)}
+              ${safeToFixed(mcData.price_distribution.max, 6)}
             </div>
           </div>
         </div>
