@@ -10,6 +10,7 @@ const FeeCalculatorPanel: React.FC = () => {
   const [currentPrice, setCurrentPrice] = useState<number>(0);
   const [currentAPR, setCurrentAPR] = useState<number | null>(null);
   const [isPriceInverted, setIsPriceInverted] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
 
   // Fetch current price and APR when pool is selected
   useEffect(() => {
@@ -123,8 +124,21 @@ const FeeCalculatorPanel: React.FC = () => {
       const lower = currentPrice * (1 - percentage / 100);
       const upper = currentPrice * (1 + percentage / 100);
       setForm({ priceLower: lower, priceUpper: upper });
+      setSelectedPreset(percentage);
     }
   };
+  
+  // Clear preset selection when user manually changes prices
+  useEffect(() => {
+    if (selectedPreset !== null && currentPrice > 0) {
+      const expectedLower = currentPrice * (1 - selectedPreset / 100);
+      const expectedUpper = currentPrice * (1 + selectedPreset / 100);
+      // If prices don't match the preset (user manually changed them), clear selection
+      if (Math.abs(form.priceLower - expectedLower) > 0.01 || Math.abs(form.priceUpper - expectedUpper) > 0.01) {
+        setSelectedPreset(null);
+      }
+    }
+  }, [form.priceLower, form.priceUpper, selectedPreset, currentPrice]);
 
   const tokenLabels = getTokenLabels();
 
@@ -135,7 +149,7 @@ const FeeCalculatorPanel: React.FC = () => {
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3 mb-2">
                 <div className="text-sm text-gray-600">Current Price</div>
                 <button
                   onClick={() => setIsPriceInverted(!isPriceInverted)}
@@ -214,25 +228,41 @@ const FeeCalculatorPanel: React.FC = () => {
         <div className="mb-6 flex gap-2">
           <button
             onClick={() => setRangePreset(5)}
-            className="flex-1 px-4 py-3 text-sm font-medium bg-white border-2 border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-all"
+            className={`flex-1 px-4 py-3 text-sm font-medium border-2 rounded-lg transition-all ${
+              selectedPreset === 5
+                ? 'bg-primary-600 text-white border-primary-600 shadow-md'
+                : 'bg-white border-gray-300 hover:border-primary-500 hover:bg-primary-50'
+            }`}
           >
             ±5%
           </button>
           <button
             onClick={() => setRangePreset(10)}
-            className="flex-1 px-4 py-3 text-sm font-medium bg-white border-2 border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-all"
+            className={`flex-1 px-4 py-3 text-sm font-medium border-2 rounded-lg transition-all ${
+              selectedPreset === 10
+                ? 'bg-primary-600 text-white border-primary-600 shadow-md'
+                : 'bg-white border-gray-300 hover:border-primary-500 hover:bg-primary-50'
+            }`}
           >
             ±10%
           </button>
           <button
             onClick={() => setRangePreset(20)}
-            className="flex-1 px-4 py-3 text-sm font-medium bg-white border-2 border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-all"
+            className={`flex-1 px-4 py-3 text-sm font-medium border-2 rounded-lg transition-all ${
+              selectedPreset === 20
+                ? 'bg-primary-600 text-white border-primary-600 shadow-md'
+                : 'bg-white border-gray-300 hover:border-primary-500 hover:bg-primary-50'
+            }`}
           >
             ±20%
           </button>
           <button
             onClick={() => setRangePreset(30)}
-            className="flex-1 px-4 py-3 text-sm font-medium bg-white border-2 border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-all"
+            className={`flex-1 px-4 py-3 text-sm font-medium border-2 rounded-lg transition-all ${
+              selectedPreset === 30
+                ? 'bg-primary-600 text-white border-primary-600 shadow-md'
+                : 'bg-white border-gray-300 hover:border-primary-500 hover:bg-primary-50'
+            }`}
           >
             ±30%
           </button>
