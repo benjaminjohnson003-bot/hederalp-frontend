@@ -135,14 +135,22 @@ const FeeCalculatorPanel: React.FC = () => {
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex-1">
-              <div className="flex items-center space-x-2 mb-2">
+              <div className="flex items-center justify-between mb-2">
                 <div className="text-sm text-gray-600">Current Price</div>
                 <button
                   onClick={() => setIsPriceInverted(!isPriceInverted)}
-                  className="p-1 hover:bg-blue-100 rounded-full transition-colors"
-                  title="Invert price"
+                  className={`
+                    flex items-center gap-2 px-3 py-1.5 rounded-lg font-medium text-sm
+                    transition-all duration-200 border-2
+                    ${isPriceInverted 
+                      ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 shadow-md' 
+                      : 'bg-white text-blue-600 border-blue-300 hover:border-blue-500 hover:bg-blue-50'
+                    }
+                  `}
+                  title="Toggle price display"
                 >
-                  <RefreshCw className="w-4 h-4 text-blue-600" />
+                  <RefreshCw className={`w-4 h-4 ${isPriceInverted ? 'rotate-180' : ''} transition-transform`} />
+                  {isPriceInverted ? 'Inverted' : 'Invert Price'}
                 </button>
               </div>
               <div className="text-3xl font-bold text-gray-900">
