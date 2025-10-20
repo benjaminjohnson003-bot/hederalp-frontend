@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Sitemap: https://hederalp.com/sitemap.xml
+
+# HederaLP - Advanced SaucerSwap V2 LP Strategy Analyzer
+# 
+# Features:
+# - Scenario Analysis (Bear/Base/Bull cases)
+# - Monte Carlo Simulation for risk assessment
+# - Historical Backtesting with HODL comparison
+# - APR Comparison (Pool-wide vs Concentrated position)
+# - Capital Efficiency Metrics
+# - Impermanent Loss Calculator
+# - Real-time data from SaucerSwap V2
+#
+# Supported Pools: HBAR/USDC, HBAR/DOVU, SAUCE/HBAR, and more
+# 
+# Free to use, no wallet connection required for analysis
+
