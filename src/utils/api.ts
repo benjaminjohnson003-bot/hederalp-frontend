@@ -183,7 +183,10 @@ export const apiClient = {
 };
 
 // Utility functions for API data processing
-export const formatCurrency = (value: number, decimals: number = 2): string => {
+export const formatCurrency = (value: number | undefined, decimals: number = 2): string => {
+  if (value === undefined || value === null || isNaN(value)) {
+    return '$0.00';
+  }
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -192,7 +195,10 @@ export const formatCurrency = (value: number, decimals: number = 2): string => {
   }).format(value);
 };
 
-export const formatPercentage = (value: number, decimals: number = 2): string => {
+export const formatPercentage = (value: number | undefined, decimals: number = 2): string => {
+  if (value === undefined || value === null || isNaN(value)) {
+    return '0.00%';
+  }
   return `${value.toFixed(decimals)}%`;
 };
 
