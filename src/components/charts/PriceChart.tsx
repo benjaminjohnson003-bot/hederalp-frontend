@@ -272,8 +272,17 @@ const PriceChart: React.FC<PriceChartProps> = ({
             </div>
             <div>
               <div className="text-gray-600">Total Volume</div>
-              <div className="font-semibold">
-                ${candles.reduce((sum, c) => sum + c.volume_usd, 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+              <div className="font-semibold break-words">
+                {(() => {
+                  const total = candles.reduce((sum, c) => sum + c.volume_usd, 0);
+                  if (total >= 1000000) {
+                    return `$${(total / 1000000).toFixed(2)}M`;
+                  } else if (total >= 1000) {
+                    return `$${(total / 1000).toFixed(2)}K`;
+                  } else {
+                    return `$${total.toFixed(2)}`;
+                  }
+                })()}
               </div>
             </div>
           </div>
