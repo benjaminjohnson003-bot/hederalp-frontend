@@ -172,12 +172,12 @@ const FeeCalculatorPanel: React.FC = () => {
           </div>
           
           {/* APR Display */}
-          {currentAPR !== null && !isNaN(currentAPR) && (
+          {currentAPR !== null && !isNaN(currentAPR) && typeof currentAPR === 'number' && (
             <div className="pt-4 border-t border-blue-200">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-600">Current APR</div>
                 <div className="text-2xl font-bold text-green-600">
-                  {Number(currentAPR).toFixed(2)}%
+                  {currentAPR.toFixed(2)}%
                 </div>
               </div>
               <div className="text-xs text-gray-500 mt-1">
