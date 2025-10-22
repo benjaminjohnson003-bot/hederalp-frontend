@@ -8,14 +8,13 @@ const FeeCalculatorPanel: React.FC = () => {
   const { form, setForm, selectedPool, setResults, setLoading, setError } = useLPStrategyStore();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
-  const [currentAPR, setCurrentAPR] = useState<number | null>(null);
   const [isPriceInverted, setIsPriceInverted] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
 
-  // Fetch current price and APR when pool is selected
+  // Fetch current price when pool is selected
   useEffect(() => {
     if (selectedPool) {
-      // Try to get real current price and APR from recent OHLCV data
+      // Try to get real current price from recent OHLCV data
       apiClient.getOHLCVData(selectedPool.id, '1H', 1)
         .then((data: any) => {
           if (data.candles && data.candles.length > 0) {
@@ -29,24 +28,8 @@ const FeeCalculatorPanel: React.FC = () => {
               setForm({ priceLower: lower, priceUpper: upper });
             }
           }
-          
-          // Extract APR from summary if available (use current_apr which is SaucerSwap's official APR)
-          if (data.summary && data.summary.apr) {
-            const aprValue = data.summary.apr.current_apr;
-            if (typeof aprValue === 'number' && !isNaN(aprValue)) {
-              setCurrentAPR(aprValue);
-            }
-          }
         })
         .catch(err => console.error('Failed to fetch current price:', err));
-      
-      // Get APR from pool data if available
-      // Note: APR calculation from backend is coming soon
-      if (selectedPool.apr !== undefined && selectedPool.apr !== null) {
-        setCurrentAPR(selectedPool.apr);
-      } else {
-        setCurrentAPR(null);
-      }
     }
   }, [selectedPool]);
 
