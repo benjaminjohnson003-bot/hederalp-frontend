@@ -182,23 +182,16 @@ const FeeCalculatorPanel: React.FC = () => {
               <div className="text-xs text-gray-500 mt-1">
                 Fee: {selectedPool.fee_tier || '0.15%'}
               </div>
+              {selectedPool.apr && selectedPool.apr > 0 && (
+                <div className="mt-2 pt-2 border-t border-blue-200">
+                  <div className="text-xs text-gray-600 mb-1">Pool APR</div>
+                  <div className="text-lg font-bold text-green-600">
+                    {safeToFixed(selectedPool.apr, 2)}%
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-          
-          {/* APR Display */}
-          {currentAPR !== null && !isNaN(currentAPR) && typeof currentAPR === 'number' && (
-            <div className="pt-4 border-t border-blue-200">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">Current APR</div>
-                <div className="text-2xl font-bold text-green-600">
-                  {safeToFixed(currentAPR, 2)}%
-                </div>
-              </div>
-              <div className="text-xs text-gray-500 mt-1">
-                Based on recent trading volume and fees
-              </div>
-            </div>
-          )}
         </div>
       )}
 
