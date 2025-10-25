@@ -8,54 +8,27 @@ import { Pool } from '../types';
 const PoolSelector: React.FC = () => {
   const { form, setForm, selectedPool, setSelectedPool, availablePools, setAvailablePools } = useLPStrategyStore();
 
-  // Fetch known pools (fallback/priority pools)
-  const { data: knownPools } = useQuery<Pool[]>({
+  // Fetch pools with aggressive caching for instant loads
+  const { data: knownPools, isLoading: poolsLoading } = useQuery<Pool[]>({
     queryKey: ['known-pools'],
     queryFn: apiClient.getPools,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 1000, // 1 minute - data is fresh
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    refetchOnWindowFocus: false, // Don't refetch on focus
+    refetchOnMount: false, // Don't refetch if data exists
   });
 
-  // Fetch all available pools from SaucerSwap (top 50 by TVL)
-  const { data: allPools, isLoading: poolsLoading } = useQuery<Pool[]>({
-    queryKey: ['all-pools'],
-    queryFn: () => apiClient.getAllPools(50, 'tvl'),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-
-  // Combine and deduplicate pools (prioritize known pools, then add others)
+  // Update available pools when known pools load
   React.useEffect(() => {
-    const combined: Pool[] = [];
-    const seenIds = new Set<string>();
-
-    // Add known pools first (these are verified and should always be available)
-    if (knownPools) {
-      knownPools.forEach(pool => {
-        if (pool.id && !seenIds.has(pool.id)) {
-          combined.push(pool);
-          seenIds.add(pool.id);
-        }
-      });
-    }
-
-    // Add pools from SaucerSwap API
-    if (allPools) {
-      allPools.forEach(pool => {
-        if (pool.id && !seenIds.has(pool.id)) {
-          combined.push(pool);
-          seenIds.add(pool.id);
-        }
-      });
-    }
-
-    if (combined.length > 0) {
-      setAvailablePools(combined);
+    if (knownPools && knownPools.length > 0) {
+      setAvailablePools(knownPools);
       
       // Auto-select first pool if none selected
-      if (!form.poolId && combined.length > 0) {
-        handlePoolSelect(combined[0]);
+      if (!form.poolId) {
+        handlePoolSelect(knownPools[0]);
       }
     }
-  }, [knownPools, allPools, setAvailablePools]);
+  }, [knownPools, setAvailablePools]);
 
   const handlePoolSelect = (pool: Pool) => {
     setForm({ poolId: pool.id });
