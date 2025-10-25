@@ -129,8 +129,8 @@ const PoolSelector: React.FC = () => {
                 </div>
               </div>
 
-              {/* Pool Stats */}
-              <div className="grid grid-cols-2 gap-3 text-sm mb-3">
+              {/* Pool Stats - Vertical layout to prevent overlap */}
+              <div className="space-y-3 text-sm mb-3">
                 {/* TVL */}
                 {pool.tvl_usd !== undefined && (
                   <div>
@@ -156,7 +156,7 @@ const PoolSelector: React.FC = () => {
 
                 {/* 24h Volume */}
                 {pool.volume_24h_usd !== undefined && (
-                  <div className="col-span-2">
+                  <div>
                     <div className="text-xs text-gray-500 mb-1">24h Volume</div>
                     <div className={`font-medium ${isSelected ? 'text-primary-800' : 'text-gray-700'}`}>
                       {formatCurrency(pool.volume_24h_usd, 0)}
