@@ -10,6 +10,18 @@ const FeeCalculatorPanel: React.FC = () => {
   const [currentPrice, setCurrentPrice] = useState<number>(0);
   const [isPriceInverted, setIsPriceInverted] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
+  
+  // Local state for price inputs to prevent cursor jumping
+  const [minPriceInput, setMinPriceInput] = useState<string>('');
+  const [maxPriceInput, setMaxPriceInput] = useState<string>('');
+  
+  // Sync local input state when form values change (from presets, etc.)
+  useEffect(() => {
+    const displayMin = isPriceInverted ? (1 / form.priceUpper) : form.priceLower;
+    const displayMax = isPriceInverted ? (1 / form.priceLower) : form.priceUpper;
+    setMinPriceInput(displayMin.toString());
+    setMaxPriceInput(displayMax.toString());
+  }, [form.priceLower, form.priceUpper, isPriceInverted]);
 
   // Fetch current price when pool is selected
   useEffect(() => {
@@ -254,12 +266,11 @@ const FeeCalculatorPanel: React.FC = () => {
             <div className="relative">
               <input
                 type="number"
-                value={isPriceInverted ? safeToFixed(1 / form.priceUpper, 6) : safeToFixed(form.priceLower, 6)}
-                onChange={(e) => {
+                value={minPriceInput}
+                onChange={(e) => setMinPriceInput(e.target.value)}
+                onBlur={(e) => {
                   const displayValue = parseFloat(e.target.value) || 0;
                   if (isPriceInverted) {
-                    // When inverted, min display = 1/priceUpper
-                    // So when user types new min, we set priceUpper = 1/newMin
                     setForm({ priceUpper: 1 / displayValue });
                   } else {
                     setForm({ priceLower: displayValue });
@@ -309,12 +320,11 @@ const FeeCalculatorPanel: React.FC = () => {
             <div className="relative">
               <input
                 type="number"
-                value={isPriceInverted ? safeToFixed(1 / form.priceLower, 6) : safeToFixed(form.priceUpper, 6)}
-                onChange={(e) => {
+                value={maxPriceInput}
+                onChange={(e) => setMaxPriceInput(e.target.value)}
+                onBlur={(e) => {
                   const displayValue = parseFloat(e.target.value) || 0;
                   if (isPriceInverted) {
-                    // When inverted, max display = 1/priceLower
-                    // So when user types new max, we set priceLower = 1/newMax
                     setForm({ priceLower: 1 / displayValue });
                   } else {
                     setForm({ priceUpper: displayValue });
