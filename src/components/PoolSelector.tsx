@@ -60,7 +60,7 @@ const PoolSelector: React.FC = () => {
       </div>
 
       {/* Pool Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {topPools.map((pool) => {
           const isSelected = selectedPool?.id === pool.id;
           
@@ -69,7 +69,7 @@ const PoolSelector: React.FC = () => {
               key={pool.id}
               onClick={() => handlePoolSelect(pool)}
               className={`
-                relative p-4 rounded-lg border-2 transition-all duration-200 text-left min-h-[160px] flex flex-col
+                relative p-4 rounded-lg border-2 transition-all duration-200 text-left min-h-[200px] flex flex-col overflow-hidden
                 ${isSelected 
                   ? 'border-primary-500 bg-primary-50 shadow-md ring-2 ring-primary-200' 
                   : 'border-gray-200 bg-white hover:border-primary-300 hover:shadow-sm'
@@ -84,31 +84,31 @@ const PoolSelector: React.FC = () => {
               )}
 
               {/* Pool Name */}
-              <div className="mb-3 pr-8">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className={`text-lg font-bold ${isSelected ? 'text-primary-900' : 'text-gray-900'}`}>
+              <div className="mb-4 pr-8 overflow-hidden">
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <h4 className={`text-base font-bold break-words ${isSelected ? 'text-primary-900' : 'text-gray-900'}`}>
                     {pool.token0_symbol}/{pool.token1_symbol}
                   </h4>
                   {pool.fee_tier && (
-                    <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap ${
+                    <span className={`text-xs px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0 ${
                       isSelected ? 'bg-primary-200 text-primary-800' : 'bg-gray-100 text-gray-600'
                     }`}>
                       {pool.fee_tier}
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-gray-500 mt-1 font-mono truncate">
+                <div className="text-xs text-gray-500 font-mono truncate w-full">
                   {pool.id}
                 </div>
               </div>
 
               {/* Pool Stats - Vertical layout to prevent overlap */}
-              <div className="space-y-3 text-sm mb-3">
+              <div className="space-y-2.5 text-sm mb-3 overflow-hidden">
                 {/* TVL */}
                 {pool.tvl_usd !== undefined && (
-                  <div>
-                    <div className="text-xs text-gray-500 mb-1">TVL</div>
-                    <div className={`font-semibold ${isSelected ? 'text-primary-900' : 'text-gray-900'}`}>
+                  <div className="overflow-hidden">
+                    <div className="text-xs text-gray-500 mb-0.5">TVL</div>
+                    <div className={`font-semibold text-sm truncate ${isSelected ? 'text-primary-900' : 'text-gray-900'}`}>
                       {formatCurrency(pool.tvl_usd, 0)}
                     </div>
                   </div>
@@ -116,12 +116,12 @@ const PoolSelector: React.FC = () => {
 
                 {/* APR */}
                 {pool.apr !== undefined && pool.apr > 0 && (
-                  <div>
-                    <div className="text-xs text-gray-500 mb-1 flex items-center">
-                      <TrendingUp className="w-3 h-3 mr-1" />
+                  <div className="overflow-hidden">
+                    <div className="text-xs text-gray-500 mb-0.5 flex items-center">
+                      <TrendingUp className="w-3 h-3 mr-1 flex-shrink-0" />
                       APR
                     </div>
-                    <div className="font-semibold text-success-600">
+                    <div className="font-semibold text-sm text-success-600 truncate">
                       {formatPercentage(pool.apr)}
                     </div>
                   </div>
@@ -129,9 +129,9 @@ const PoolSelector: React.FC = () => {
 
                 {/* 24h Volume */}
                 {pool.volume_24h_usd !== undefined && (
-                  <div>
-                    <div className="text-xs text-gray-500 mb-1">24h Volume</div>
-                    <div className={`font-medium ${isSelected ? 'text-primary-800' : 'text-gray-700'}`}>
+                  <div className="overflow-hidden">
+                    <div className="text-xs text-gray-500 mb-0.5">24h Volume</div>
+                    <div className={`font-medium text-sm truncate ${isSelected ? 'text-primary-800' : 'text-gray-700'}`}>
                       {formatCurrency(pool.volume_24h_usd, 0)}
                     </div>
                   </div>
@@ -142,19 +142,21 @@ const PoolSelector: React.FC = () => {
               <div className="flex-grow"></div>
 
               {/* View on Hashscan Link */}
-              <a
-                href={`https://hashscan.io/mainnet/contract/${pool.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className={`
-                  mt-3 flex items-center text-xs transition-colors
-                  ${isSelected ? 'text-primary-600 hover:text-primary-700' : 'text-gray-500 hover:text-gray-700'}
-                `}
-              >
-                <ExternalLink className="w-3 h-3 mr-1" />
-                View on Hashscan
-              </a>
+              <div className="pt-3 mt-auto border-t border-gray-100">
+                <a
+                  href={`https://hashscan.io/mainnet/contract/${pool.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className={`
+                    flex items-center text-xs transition-colors whitespace-nowrap
+                    ${isSelected ? 'text-primary-600 hover:text-primary-700' : 'text-gray-500 hover:text-gray-700'}
+                  `}
+                >
+                  <ExternalLink className="w-3 h-3 mr-1 flex-shrink-0" />
+                  View on Hashscan
+                </a>
+              </div>
             </button>
           );
         })}
