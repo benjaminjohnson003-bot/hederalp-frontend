@@ -118,6 +118,18 @@ export const apiClient = {
     return { candles: response.data.ohlcv || [] };
   },
 
+  // Get current price for a pool
+  async getCurrentPrice(poolId: string): Promise<any> {
+    const response = await api.get(`/current-price?pool_id=${encodeURIComponent(poolId)}`);
+    return response.data;
+  },
+
+  // Get all current prices
+  async getAllCurrentPrices(): Promise<any> {
+    const response = await api.get('/all-prices');
+    return response.data;
+  },
+
   // Advanced LP Strategy Analysis
   async analyzeStrategy(params: {
     poolId: string;

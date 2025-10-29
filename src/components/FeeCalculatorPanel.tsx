@@ -26,22 +26,40 @@ const FeeCalculatorPanel: React.FC = () => {
   // Fetch current price when pool is selected
   useEffect(() => {
     if (selectedPool) {
-      // Try to get real current price from recent OHLCV data
-      apiClient.getOHLCVData(selectedPool.id, '1H', 1)
+      // Use the new live price endpoint instead of OHLCV data
+      apiClient.getCurrentPrice(selectedPool.id)
         .then((data: any) => {
-          if (data.candles && data.candles.length > 0) {
-            const latestPrice = data.candles[data.candles.length - 1].close;
-            setCurrentPrice(latestPrice);
+          if (data.price_token0_per_token1) {
+            // price_token0_per_token1 is USDC per HBAR (what we want to display)
+            setCurrentPrice(data.price_token0_per_token1);
             
             // Set default range around current price if not already set
             if (form.priceLower === 0.22 && form.priceUpper === 0.26) {
-              const lower = latestPrice * 0.9; // -10%
-              const upper = latestPrice * 1.1; // +10%
+              const lower = data.price_token0_per_token1 * 0.9; // -10%
+              const upper = data.price_token0_per_token1 * 1.1; // +10%
               setForm({ priceLower: lower, priceUpper: upper });
             }
           }
         })
-        .catch(err => console.error('Failed to fetch current price:', err));
+        .catch(err => {
+          console.error('Failed to fetch current price:', err);
+          // Fallback to OHLCV data if live price fails
+          apiClient.getOHLCVData(selectedPool.id, '1H', 1)
+            .then((data: any) => {
+              if (data.candles && data.candles.length > 0) {
+                const latestPrice = data.candles[data.candles.length - 1].close;
+                setCurrentPrice(latestPrice);
+                
+                // Set default range around current price if not already set
+                if (form.priceLower === 0.22 && form.priceUpper === 0.26) {
+                  const lower = latestPrice * 0.9; // -10%
+                  const upper = latestPrice * 1.1; // +10%
+                  setForm({ priceLower: lower, priceUpper: upper });
+                }
+              }
+            })
+            .catch(err => console.error('Failed to fetch OHLCV price:', err));
+        });
     }
   }, [selectedPool]);
 
