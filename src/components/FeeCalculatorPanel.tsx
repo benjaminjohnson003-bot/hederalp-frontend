@@ -29,14 +29,14 @@ const FeeCalculatorPanel: React.FC = () => {
       // Use the new live price endpoint instead of OHLCV data
       apiClient.getCurrentPrice(selectedPool.id)
         .then((data: any) => {
-          if (data.price_token0_per_token1) {
-            // price_token0_per_token1 is USDC per HBAR (what we want to display)
-            setCurrentPrice(data.price_token0_per_token1);
+          if (data.display_price) {
+            // Use the intuitive display price format
+            setCurrentPrice(data.display_price);
             
             // Set default range around current price if not already set
             if (form.priceLower === 0.22 && form.priceUpper === 0.26) {
-              const lower = data.price_token0_per_token1 * 0.9; // -10%
-              const upper = data.price_token0_per_token1 * 1.1; // +10%
+              const lower = data.display_price * 0.9; // -10%
+              const upper = data.display_price * 1.1; // +10%
               setForm({ priceLower: lower, priceUpper: upper });
             }
           }
