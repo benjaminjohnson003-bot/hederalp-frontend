@@ -29,14 +29,18 @@ const FeeCalculatorPanel: React.FC = () => {
       // Use the new live price endpoint instead of OHLCV data
       apiClient.getCurrentPrice(selectedPool.id)
         .then((data: any) => {
-          if (data.display_price) {
-            // Use the intuitive display price format
-            setCurrentPrice(data.display_price);
+          // Use price_token1_per_token0 for backend calculations (this is what backend expects)
+          // display_price is for user-friendly display, but backend needs token1 per token0 format
+          const backendPrice = data.price_token1_per_token0 || data.display_price;
+          
+          if (backendPrice) {
+            // Store the backend format price for calculations
+            setCurrentPrice(backendPrice);
             
             // Set default range around current price if not already set
             if (form.priceLower === 0.22 && form.priceUpper === 0.26) {
-              const lower = data.display_price * 0.9; // -10%
-              const upper = data.display_price * 1.1; // +10%
+              const lower = backendPrice * 0.9; // -10%
+              const upper = backendPrice * 1.1; // +10%
               setForm({ priceLower: lower, priceUpper: upper });
             }
           }
